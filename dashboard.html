@@ -495,6 +495,33 @@
         body.light tr:hover {
             background: #ffe6e6;
         }
+
+        /* ======================== MOBILE LAYOUT ======================== */
+        @media (max-width: 900px) {
+
+            .sidebar-user {
+                display: none;
+            }
+
+            .mobile-user-photo {
+                position: fixed;
+                right: 15px;
+                bottom: 85px;
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid #ff0000;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+                z-index: 1100;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            .mobile-user-photo:active {
+                transform: scale(0.95);
+            }
+        }
     </style>
 </head>
 
@@ -524,6 +551,7 @@
     </div>
 
     <div class="main" id="mainContent"></div>
+    <img id="mobileUserPhoto" class="mobile-user-photo" style="display:none;">
 
     <script type="module">
         import { db, auth } from "./firebase.js";
@@ -1507,7 +1535,9 @@
         async function atualizarSidebar(userData) {
             // Foto
             const userPhoto = document.getElementById("userPhoto");
+            const userPhotoMobile = document.getElementById("mobileUserPhoto")
             userPhoto.src = userData.photoBase64 || userData.photoURL || "https://i.imgur.com/4Z7Dz7S.png";
+            userPhotoMobile.src = userData.photoBase64 | userData.photoUrl;
 
             // Nome
             const userNome = document.getElementById("userNomeSidebar");
@@ -1588,6 +1618,22 @@
         document.getElementById("btnVer").onclick = () => mostrarSecao("Ver");
         document.getElementById("btnGerarChave").onclick = () => mostrarSecao("GerarChave");
         document.getElementById("btnAdmin").onclick = () => mostrarSecao("Admin");
+    </script>
+    <script>
+        function handleMobileUserPhoto() {
+            const photo = document.getElementById("mobileUserPhoto");
+            const originalPhoto = document.getElementById("userPhoto");
+
+            if (window.innerWidth <= 900) {
+                photo.style.display = "block";
+                photo.src = originalPhoto.src;
+            } else {
+                photo.style.display = "none";
+            }
+        }
+
+        window.addEventListener("resize", handleMobileUserPhoto);
+        window.addEventListener("load", handleMobileUserPhoto);
     </script>
 </body>
 
