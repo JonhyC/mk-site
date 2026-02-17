@@ -3,11 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>MK Admin Login - Debug</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* estilos resumidos para foco no login */
         * {
             margin: 0;
             padding: 0;
@@ -16,22 +15,25 @@
         }
 
         body {
-            height: 100vh;
+            min-height: 100dvh;
+            /* melhor que 100vh */
             display: flex;
             justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #0f0f1a, #1e1e2f);
-            overflow: hidden;
+            padding: 20px;
+            overflow-x: hidden;
             position: relative;
         }
 
+        /* Background animado (somente desktop) */
         body::before {
             content: "";
             position: absolute;
-            width: 300%;
-            height: 300%;
+            width: 250%;
+            height: 250%;
             background: radial-gradient(circle, rgba(255, 0, 0, 0.15) 0%, transparent 70%);
-            animation: rotateBg 25s linear infinite;
+            animation: rotateBg 30s linear infinite;
             z-index: 0;
         }
 
@@ -45,15 +47,23 @@
             }
         }
 
+        /* Remove animação pesada no telemóvel */
+        @media (max-width: 768px) {
+            body::before {
+                display: none;
+            }
+        }
+
         .login-container {
             position: relative;
             background: #1e1e2f;
             padding: 50px 40px;
             border-radius: 25px;
-            width: 380px;
+            width: 100%;
+            max-width: 420px;
             text-align: center;
             box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
-            animation: fadeIn 1s ease;
+            animation: fadeIn 0.8s ease;
             z-index: 1;
         }
 
@@ -89,32 +99,67 @@
             }
         }
 
+        /* Inputs */
         .login-container input {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             margin: 12px 0;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             outline: none;
             font-size: 16px;
+            /* evita zoom no iPhone */
         }
 
+        /* Botão */
         .login-container button {
             width: 100%;
-            padding: 14px;
-            margin-top: 10px;
+            padding: 16px;
+            margin-top: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             background: #ff0000;
             color: white;
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            transition: .3s;
+            transition: 0.3s;
         }
 
         .login-container button:hover {
             background: #cc0000;
+        }
+
+        .login-container button:active {
+            transform: scale(0.97);
+        }
+
+        /* Ajustes para telas muito grandes */
+        @media (min-width: 1200px) {
+            .login-container {
+                max-width: 480px;
+                padding: 60px 50px;
+            }
+
+            .logo {
+                width: 150px;
+            }
+        }
+
+        /* Ajustes para telas pequenas */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 35px 20px;
+                border-radius: 18px;
+            }
+
+            .logo {
+                width: 100px;
+            }
+
+            .login-container h2 {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
