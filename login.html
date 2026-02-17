@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MK Admin Login</title>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f0f1a, #1e1e2f);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fundo animado */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.15) 0%, transparent 70%);
+            animation: rotateBg 25s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Caixa de login */
+        .login-container {
+            position: relative;
+            background: #1e1e2f;
+            padding: 50px 40px;
+            border-radius: 25px;
+            width: 380px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+            animation: fadeIn 1s ease;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo */
+        .logo {
+            width: 130px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* Inputs */
+        .login-container input {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 12px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        /* Botão */
+        .login-container button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            background: #ff0000;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-container button:hover {
+            background: #cc0000;
+        }
+
+        /* Efeito shake */
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            75% {
+                transform: translateX(6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container" id="loginBox">
+        <img src="logo.webp" class="logo" alt="MK Logo">
+        <h2 style="color:white; margin-bottom:20px;">Admin Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Senha">
+        <button id="btnLogin">Entrar</button>
+    </div>
+
+    <script type="module">
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { db } from "./firebase.js";
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const auth = getAuth();
+
+        document.getElementById("btnLogin").addEventListener("click", async () => {
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (!email || !password) {
+                Swal.fire({ icon: "error", title: "Erro", text: "Preencha email e senha!", timer: 2000, showConfirmButton: false });
+                return;
+            }
+
+            Swal.fire({ title: "Verificando...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            try {
+                // 🔑 Login com Firebase Auth
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // 📝 Pega role do admin no Firestore
+                const adminsRef = collection(db, "admins");
+                const q = query(adminsRef, where("email", "==", user.email));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    Swal.close();
+                    Swal.fire({ icon: "error", title: "Erro", text: "Você não tem acesso de admin", timer: 2000, showConfirmButton: false });
+                    await auth.signOut();
+                    return;
+                }
+
+                const adminData = querySnapshot.docs[0].data();
+
+                // ✅ Salva cargo no localStorage para exibição no dashboard
+                localStorage.setItem("adminCargo", adminData.cargo);
+
+                Swal.close();
+                Swal.fire({ icon: "success", title: "Login OK", timer: 1000, showConfirmButton: false });
+
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
+
+            } catch (err) {
+                Swal.close();
+                let msg = "Falha no login";
+                if (err.code === "auth/user-not-found") msg = "Email não encontrado";
+                else if (err.code === "auth/wrong-password") msg = "Senha incorreta";
+                Swal.fire({ icon: "error", title: "Erro", text: msg, timer: 2000, showConfirmButton: false });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

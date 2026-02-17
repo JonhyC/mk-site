@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MK Dashboard</title>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ======================== RESET ======================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: #0f0f1a;
+            color: #fff;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* ======================== SIDEBAR ======================== */
+        .sidebar {
+            width: 260px;
+            background: #111;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar .logo {
+            width: 140px;
+            margin-bottom: 40px;
+            user-select: none;
+        }
+
+        .sidebar button {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: none;
+            border: none;
+            border-left: 4px solid transparent;
+            border-radius: 8px;
+            color: #fff;
+            padding: 14px 12px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .sidebar button:hover,
+        .sidebar button.active {
+            background: #1a1a1a;
+            border-left: 4px solid #ff0000;
+        }
+
+        /* ======================== SIDEBAR USER ======================== */
+        .sidebar-user {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ff0000;
+        }
+
+        .user-text strong {
+            font-size: 14px;
+            display: block;
+        }
+
+        .user-text span {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .user-actions button {
+            background: #1a1a1a;
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .user-actions button:hover {
+            background: #ff0000;
+        }
+
+        /* ======================== MAIN CONTENT ======================== */
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #1b1b2f, #0f0f1a);
+            transition: all 0.3s ease;
+        }
+
+        header.dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        header.dashboard-header h2 {
+            font-weight: 600;
+            color: #fff;
+            font-size: 24px;
+            user-select: none;
+        }
+
+        /* ======================== BADGES DE CARGO ======================== */
+        .badgeCargo {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            user-select: none;
+            background-color: #1e1e2f;
+            /* fundo escuro */
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        /* Overlay animado da borda */
+        .badgeCargo::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            border-radius: 20px;
+            z-index: -1;
+            background-size: 200% 200%;
+            animation: borderGlow 3s linear infinite;
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+        }
+
+        /* Animação da borda */
+        @keyframes borderGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Borda animada por cargo */
+        .badgeCEO::before {
+            background: linear-gradient(270deg, #ff4d4d, #ff9900, #ff4d4d);
+        }
+
+        .badgeAdmin::before {
+            background: linear-gradient(270deg, #3498db, #00d4ff, #3498db);
+        }
+
+        .badgeModerador::before {
+            background: linear-gradient(270deg, #2ecc71, #66ff66, #2ecc71);
+        }
+
+        .badgeUser::before {
+            background: linear-gradient(270deg, #7f8c8d, #ccc, #7f8c8d);
+        }
+
+        /* ======================== CARDS ======================== */
+        .card {
+            background: #1e1e2f;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+             
+            transition: all 0.3s ease;
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            color: #ff4d4d;
+        }
+
+        /* ======================== STATS GRID ======================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #1e1e2f, #141423);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: #ff4d4d;
+        }
+
+        .stat-card p {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .stat-icon {
+            font-size: 28px;
+            color: #ff4d4d;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        /* ======================== CHAMPIONSHIP GRID ======================== */
+        .championship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .championship-card {
+            background: #1e1e2f;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .championship-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .championship-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff4d4d;
+            margin-bottom: 15px;
+        }
+
+        .championship-body small {
+            color: #bbb;
+        }
+
+        /* ======================== PLAYERS GRID ======================== */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* ======================== TABLES ======================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background: #ff0000;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+        }
+
+        tr:nth-child(even) {
+            background: #1a1a1a;
+        }
+
+        tr:hover {
+            background: #222;
+        }
+
+        /* ======================== FORMS ======================== */
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            background: #111;
+            color: #fff;
+            outline: none;
+        }
+
+        button.primary {
+            background: #ff0000;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+        }
+
+        button.primary:hover {
+            background: #cc0000;
+        }
+
+        button.delete-btn {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button.delete-btn:hover {
+            background: #aa0000;
+            transform: translateY(-2px);
+        }
+
+        /* ======================== TEAM BOX / CHAVES ======================== */
+        #chavesContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .team-box {
+            background: #1e1e2f;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 6px solid #ff0000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1 1 200px;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        .team-box:hover {
+            background: #111;
+            transform: translateY(-3px);
+        }
+
+        .team-box strong {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ff4d4d;
+            margin-bottom: 8px;
+        }
+
+        .team-box small {
+            font-size: 13px;
+            color: #bbb;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .team-box div {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ======================== TEMA CLARO ======================== */
+        body.light {
+            background: #f4f4f4;
+            color: #111;
+        }
+
+        body.light .main {
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+        }
+
+        body.light .sidebar {
+            background: #fff;
+            color: #111;
+            box-shadow: 3px 0 20px rgba(255, 77, 77, 0.2);
+        }
+
+        body.light .sidebar button {
+            color: #111;
+        }
+
+        body.light .sidebar button:hover,
+        body.light .sidebar button.active {
+            background: #eee;
+            border-left: 4px solid #ff0000;
+        }
+
+        body.light .user-actions button {
+            background: #eaeaea;
+            color: #111;
+        }
+
+        body.light .user-actions button:hover {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        body.light .card,
+        body.light .stat-card,
+        body.light .championship-card {
+            background: #fff;
+            color: #111;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.1);
+        }
+
+        body.light input,
+        body.light select {
+            background: #eee;
+            color: #111;
+        }
+
+        body.light table th {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        body.light tr:nth-child(even) {
+            background: #f0f0f0;
+        }
+
+        body.light tr:hover {
+            background: #ffe6e6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <img src="logo.webp" class="logo" alt="Logo MK">
+        <button id="btnDashboard"><i class="fa-solid fa-home"></i> Dashboard</button>
+        <button id="btnCriar"><i class="fa-solid fa-plus"></i> Adicionar Jogadores</button>
+        <button id="btnGerarChave"><i class="fa-solid fa-key"></i> Gerar Chave</button>
+        <button id="btnVer"><i class="fa-solid fa-eye"></i> Ver Equipas</button>
+        <button id="btnAdmin" style="display:none;"><i class="fa-solid fa-user-shield"></i> Admin Panel</button>
+
+        <div class="sidebar-user" id="sidebarUserBox">
+            <div class="user-info">
+                <img id="userPhoto" src="https://i.imgur.com/4Z7Dz7S.png">
+                <div class="user-text">
+                    <strong id="userNomeSidebar">Carregando..</strong>
+                    <span id="userCargoSidebar">Carregando..</span>
+                </div>
+            </div>
+
+            <div class="user-actions">
+                <button id="btnSettings"><i class="fa-solid fa-gear"></i></button>
+                <button id="btnLogoutIcon"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main" id="mainContent"></div>
+
+    <script type="module">
+        import { db, auth } from "./firebase.js";
+        import { collection, getDocs, getDoc, addDoc, deleteDoc, doc, updateDoc, setDoc }
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        let currentUser = null, currentUserNome = null, currentUserRole = null;
+        let jogadores = [], grafico = null;
+
+        // ---------------- FUNÇÕES AUXILIARES ----------------
+        function ativarBotao(id) {
+            document.querySelectorAll(".sidebar button").forEach(b => b.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+        }
+
+        async function logout() {
+            await signOut(auth);
+            window.location.href = "login.html";
+        }
+
+        // ---------------- SEÇÕES ----------------
+        async function mostrarSecao(secao) {
+            const main = document.getElementById("mainContent");
+            const cargoMap = {
+                ceo: { emoji: "👑", classe: "badgeCEO" },
+                admin: { emoji: "🛡️", classe: "badgeAdmin" },
+                moderador: { emoji: "⚔️", classe: "badgeModerador" },
+                user: { emoji: "👤", classe: "badgeUser" }
+            };
+
+            const cargo = currentUserRole ? currentUserRole.toLowerCase() : "user";
+            const cargoInfo = cargoMap[cargo] || cargoMap.user;
+            jogadores = [];
+
+            switch (secao) {
+                case "Dashboard":
+                    ativarBotao("btnDashboard");
+                    main.innerHTML = `
+                    <header class="dashboard-header">
+                        <div>
+                            <h2>
+                                Bem-vindo, <span id="adminNome">${currentUserNome}</span>
+                            </h2>
+                            <div class="user-role">
+                                <span class="badgeCargo ${cargoInfo.classe}">
+                                    ${cargoInfo.emoji} ${currentUserRole}
+                                </span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- Cards Estatísticas -->
+                    <section class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-people-group"></i></div>
+                            <div>
+                                <h3 id="totalEquipas">0</h3>
+                                <p>Equipas Criadas</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <h3 id="totalJogadores">0</h3>
+                                <p>Jogadores Registados</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+                            <div>
+                                <h3 id="totalCampeonatos">0</h3>
+                                <p>Campeonatos Ativos</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Campeonatos Ativos -->
+                    <section class="championship-section">
+                        <h3 class="section-title">
+                            <i class="fa-solid fa-fire"></i> Campeonatos Ativos
+                        </h3>
+                        <div id="campeonatosContainer" class="championship-grid"></div>
+                    </section>
+                `;
+
+                    carregarDashboard();
+                    break;
+
+                case "Criar":
+                    ativarBotao("btnCriar");
+
+                    main.innerHTML = `
+                    <div class="card">
+                        <h3 style="margin-bottom:20px;">➕ Criar Jogador</h3>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <input type="text" id="novoJogadorId" placeholder="ID do Jogador">
+                            <input type="text" id="novoJogadorNome" placeholder="Nome do Jogador">
+                            <button class="primary" id="btnSalvarJogador">
+                                <i class="fa-solid fa-user-plus"></i> Criar Jogador
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:25px;">
+                        <h3 style="margin-bottom:20px;">👥 Jogadores Criados</h3>
+                        <div id="listaJogadores" class="players-grid"></div>
+                    </div>
+
+                    <div class="card" id="criarEquipeBox" style="margin-top:25px; display:none;">
+                        <h3 style="margin-bottom:15px;">⚔️ Criar Equipas</h3>
+
+                        <select id="limiteEquipe">
+                            <option value="2">2 Jogadores por Equipa</option>
+                            <option value="3">3 Jogadores por Equipa</option>
+                            <option value="4">4 Jogadores por Equipa</option>
+                            <option value="5">5 Jogadores por Equipa</option>
+                            <option value="6">6 Jogadores por Equipa</option>
+                        </select>
+
+                        <button class="primary" id="btnCriarEquipas" style="margin-top:10px;">
+                            <i class="fa-solid fa-people-group"></i> Criar Equipas RANDOM
+                        </button>
+                    </div>
+                `;
+
+                    document.getElementById("btnSalvarJogador").onclick = criarJogador;
+                    document.getElementById("btnCriarEquipas").onclick = criarEquipasRandom;
+
+                    carregarJogadoresDB();
+                    break;
+
+                case "Ver":
+                    ativarBotao("btnVer");
+                    main.innerHTML = `<div class="card"><h3>👀 Equipas Criadas</h3><div id="equipasContainer"></div></div>`;
+                    carregarEquipas();
+                    break;
+
+                case "Admin":
+                    ativarBotao("btnAdmin");
+                    main.innerHTML = `
+                    <div class="card">
+                        <h3>🛠️ Admin Panel</h3>
+                        <button class="primary" id="btnCriarUser"><i class="fa-solid fa-user-plus"></i> Criar Novo Usuário</button>
+                        <div style="margin-top:20px; overflow-x:auto;">
+                            <table id="adminTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>Cargo</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>`;
+                    document.getElementById("btnCriarUser").onclick = () => criarOuEditarUser();
+                    carregarAdminPanel();
+                    break;
+
+                case "GerarChave":
+                    ativarBotao("btnGerarChave");
+                    main.innerHTML = `
+                    <div class="card">
+                        <h3>🔑 Gerar Chaves para Campeonato</h3>
+                        <button class="primary" id="btnGerarNovaChave"><i class="fa-solid fa-key"></i> Gerar Nova Chave</button>
+                        <div id="chavesContainer" style="margin-top:20px; display:flex; flex-wrap:wrap; gap:15px;"></div>
+                    </div>`;
+
+                    document.getElementById("btnGerarNovaChave").onclick = gerarChave;
+                    carregarChaves();
+                    break;
+            }
+        }
+
+        // ---------------- DASHBOARD ----------------
+        async function carregarDashboard() {
+            try {
+                const equipasSnap = await getDocs(collection(db, "equipas"));
+                const jogadoresSnap = await getDocs(collection(db, "jogadores"));
+                const chavesSnap = await getDocs(collection(db, "chaves"));
+
+                document.getElementById("totalEquipas").innerText = equipasSnap.size;
+                document.getElementById("totalJogadores").innerText = jogadoresSnap.size;
+                document.getElementById("totalCampeonatos").innerText = chavesSnap.size;
+
+                const container = document.getElementById("campeonatosContainer");
+                container.innerHTML = "";
+
+                if (chavesSnap.empty) {
+                    container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>Nenhum campeonato ativo no momento.</p>
+                </div>
+            `;
+                    return;
+                }
+
+                chavesSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+
+                    const card = document.createElement("div");
+                    card.classList.add("championship-card");
+
+                    card.innerHTML = `
+                        <div class="championship-header">
+                            <i class="fa-solid fa-trophy"></i>
+                            <span>${data.chave}</span>
+                        </div>
+
+                        <div class="championship-body">
+                            <small>Criado por: ${data.criadoPor || "Sistema"}</small><br>
+                            <small>Tipo: ${data.tipo || "-"}</small><br>
+                            <small>Local: ${data.local || "-"}</small><br>
+                            <small>Arma: ${data.arma || "-"}</small>
+                        </div>
+
+                        <div class="championship-footer">
+                            <button class="primary">
+                                <i class="fa-solid fa-arrow-right"></i> Abrir
+                            </button>
+                        </div>
+                    `;
+
+                    card.querySelector("button").onclick = () => {
+                        window.location.href = `campeonato.html?chave=${data.chave}`;
+                    };
+
+                    container.appendChild(card);
+                });
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ------------------
+        // Carregar Chaves
+        // ------------------
+        async function carregarChaves() {
+            const container = document.getElementById("chavesContainer");
+            container.innerHTML = "";
+            try {
+                const snap = await getDocs(collection(db, "chaves"));
+                if (snap.empty) {
+                    container.innerHTML = "<p>Nenhuma chave gerada ainda.</p>";
+                    return;
+                }
+
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const div = document.createElement("div");
+                    div.classList.add("team-box");
+                    div.style.flex = "1 1 200px";
+                    div.style.display = "flex";
+                    div.style.flexDirection = "column";
+                    div.style.justifyContent = "space-between";
+
+                    const titulo = document.createElement("strong");
+                    titulo.textContent = `Chave: ${data.chave}`;
+
+                    const info = document.createElement("small");
+                    info.innerHTML = `
+                        Tipo: ${data.tipo || "Não definido"}<br>
+                        Local: ${data.local || "Não definido"}<br>
+                        Arma: ${data.arma || "Não definido"}
+                    `;
+                    info.style.marginTop = "5px";
+
+                    const btnContainer = document.createElement("div");
+                    btnContainer.style.marginTop = "10px";
+                    btnContainer.style.display = "flex";
+                    btnContainer.style.gap = "5px";
+
+                    const btnAbrir = document.createElement("button");
+                    btnAbrir.classList.add("primary");
+                    btnAbrir.innerHTML = '<i class="fa-solid fa-trophy"></i> Abrir Campeonato';
+                    btnAbrir.addEventListener("click", () => {
+                        window.location.href = `campeonato.html?chave=${data.chave}`;
+                    });
+
+                    const btnDeletar = document.createElement("button");
+                    btnDeletar.classList.add("delete-btn");
+                    btnDeletar.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                    btnDeletar.addEventListener("click", () => deletarChave(docSnap.id));
+
+                    btnContainer.appendChild(btnAbrir);
+                    btnContainer.appendChild(btnDeletar);
+
+                    div.appendChild(titulo);
+                    div.appendChild(btnContainer);
+                    container.appendChild(div);
+                });
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = "<p>Erro ao carregar chaves.</p>";
+            }
+        }
+
+        // ------------------
+        // Gerar Token
+        // ------------------
+        function gerarToken(length) {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            let token = "";
+            for (let i = 0; i < length; i++) token += chars.charAt(Math.floor(Math.random() * chars.length));
+            return token;
+        }
+
+        // ------------------
+        // Deletar Chave Botão
+        // ------------------
+        async function deletarChave(docId) {
+            const confirm = await Swal.fire({
+                icon: "warning",
+                title: "Tem certeza?",
+                text: "Esta chave será deletada!",
+                showCancelButton: true,
+                confirmButtonText: "Sim, deletar",
+                cancelButtonText: "Cancelar"
+            });
+            if (confirm.isConfirmed) {
+                try {
+                    await deleteDoc(doc(db, "chaves", docId));
+                    Swal.fire({ icon: "success", title: "Chave deletada!" });
+                    carregarChaves();
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire({ icon: "error", title: "Erro ao deletar chave" });
+                }
+            }
+        }
+
+        // ------------------
+        // Gerar Chave
+        // ------------------
+        async function gerarChave() {
+            const { value: formValues } = await Swal.fire({
+                title: "Criar Novo Campeonato",
+                html: `
+                    <label style="display:block;margin-bottom:5px;">Tipo:</label>
+                    <select id="swalTipo" class="swal2-select">
+                        <option value="1v1">1v1</option>
+                        <option value="2v2">2v2</option>
+                        <option value="3v3">3v3</option>
+                        <option value="4v4">4v4</option>
+                        <option value="5v5">5v5</option>
+                        <option value="6v6">6v6</option>
+                    </select>
+
+                    <label style="display:block;margin:15px 0 5px;">Local:</label>
+                    <select id="swalLocal" class="swal2-select">
+                        <option value="Fazenda">Fazenda</option>
+                        <option value="Prédio">Prédio</option>
+                        <option value="Porta-Aviões">Porta-Aviões</option>
+                        <option value="Labirinto">Labirinto</option>
+                        <option value="Porto">Porto</option>
+                        <option value="Prefeitura">Prefeitura</option>
+                        <option value="Prisão">Prisão</option>
+                        <option value="Antena">Antena</option>
+                    </select>
+
+                    <label style="display:block;margin:15px 0 5px;">Arma:</label>
+                    <select id="swalArma" class="swal2-select">
+                        <option value="Five-Seven">Five-Seven</option>
+                        <option value="G36">G36</option>
+                    </select>
+                `,
+                showCancelButton: true,
+                confirmButtonText: "Gerar Campeonato",
+                cancelButtonText: "Cancelar",
+                preConfirm: () => {
+                    return {
+                        tipo: document.getElementById("swalTipo").value,
+                        local: document.getElementById("swalLocal").value,
+                        arma: document.getElementById("swalArma").value
+                    };
+                }
+            });
+
+            if (!formValues) return;
+
+            try {
+                // 🔥 BUSCAR TODAS AS EQUIPAS
+                const equipasSnap = await getDocs(collection(db, "equipas"));
+
+                if (equipasSnap.empty) {
+                    Swal.fire({ icon: "warning", title: "Não existem equipas criadas!" });
+                    return;
+                }
+
+                let listaEquipas = [];
+
+                equipasSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    listaEquipas.push({
+                        id: docSnap.id,
+                        nome: "Equipa " + docSnap.id.slice(0, 4),
+                        jogadores: data.equipa || []
+                    });
+                });
+
+                const chave = gerarToken(8);
+
+                // 🔥 SALVAR CHAVE COM EQUIPAS
+                await addDoc(collection(db, "chaves"), {
+                    chave: chave,
+                    tipo: formValues.tipo,
+                    local: formValues.local,
+                    arma: formValues.arma,
+                    criadoEm: new Date(),
+                    criadoPor: currentUser.email,
+                    equipas: listaEquipas // 👈 AQUI ESTÁ O SEGREDO
+                });
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Campeonato criado com sucesso!",
+                    html: `
+                <b>Chave:</b> ${chave}<br>
+                <b>Equipas:</b> ${listaEquipas.length}
+            `
+                });
+
+                carregarChaves();
+                carregarDashboard();
+
+            } catch (e) {
+                console.error(e);
+                Swal.fire({ icon: "error", title: "Erro ao criar campeonato" });
+            }
+        }
+
+        // ---------------- EQUIPES ----------------
+        async function adicionarJogador() {
+            const idInput = document.getElementById("jogadorIdInput");
+            const nomeInput = document.getElementById("jogadorNomeInput");
+            const id = idInput.value.trim();
+            const nome = nomeInput.value.trim();
+
+            if (!id || !nome) {
+                Swal.fire({ icon: "warning", title: "Erro", text: "Preencha o ID e o Nome do jogador", timer: 1500, showConfirmButton: false });
+                return;
+            }
+
+            if (jogadores.some(j => j.id === id)) {
+                Swal.fire({ icon: "error", title: "Erro", text: "ID já adicionado!", timer: 1500, showConfirmButton: false });
+                return;
+            }
+
+            // Adiciona ao array local
+            jogadores.push({ id, nome });
+
+            // Salva na tabela "jogadores" no Firestore
+            try {
+                await setDoc(doc(db, "jogadores", id), {
+                    nome: nome,
+                    criadoEm: new Date(),
+                    criadoPor: currentUser.email
+                });
+            } catch (e) {
+                console.error(e);
+                Swal.fire({ icon: "error", title: "Erro ao salvar jogador" });
+                return;
+            }
+
+            idInput.value = "";
+            nomeInput.value = "";
+            atualizarTabelaJogadores();
+            Swal.fire({ icon: "success", title: "Jogador adicionado", timer: 1000, showConfirmButton: false });
+        }
+
+        // ------------------
+        // Atualizar Tabela de Jogadores
+        // ------------------
+        async function atualizarTabelaJogadores() {
+            const tbody = document.querySelector("#tabelaJogadores tbody");
+            tbody.innerHTML = "";
+
+            try {
+                const snap = await getDocs(collection(db, "jogadores"));
+                if (snap.empty) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; font-style:italic;">Nenhum jogador adicionado ainda.</td></tr>`;
+                    jogadores = [];
+                    return;
+                }
+
+                jogadores = []; // limpa o array local
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    jogadores.push({ id: docSnap.id, nome: data.nome });
+                });
+
+                jogadores.forEach(j => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                <td>${j.id}</td>
+                <td>${j.nome}</td>
+                <td>
+                    <button class="delete-btn" style="padding:4px 8px; font-size:12px;">❌ Remover</button>
+                </td>`;
+                    tr.querySelector("button").onclick = async () => {
+                        try {
+                            await deleteDoc(doc(db, "jogadores", j.id));
+                            Swal.fire({ icon: "success", title: "Jogador removido", timer: 1000, showConfirmButton: false });
+                            atualizarTabelaJogadores(); // recarrega a tabela
+                        } catch (e) {
+                            console.error(e);
+                            Swal.fire({ icon: "error", title: "Erro ao remover jogador" });
+                        }
+                    };
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">Erro ao carregar jogadores</td></tr>`;
+            }
+        }
+
+        // ------------------
+        // Gerar Bracket
+        // ------------------
+        function gerarBracket() {
+            const container = document.getElementById("bracketContainer");
+            container.innerHTML = "";
+
+            if (!equipes || !equipes.length) {
+                container.innerHTML = "<p>Nenhuma equipa neste campeonato.</p>";
+                return;
+            }
+
+            // 🔥 Embaralhar equipas
+            let faseAtual = [...equipes].sort(() => Math.random() - 0.5);
+
+            let total = faseAtual.length;
+
+            // 🔥 Ajustar para potência de 2
+            let tamanho = 1;
+            while (tamanho < total) tamanho *= 2;
+
+            // 🔥 Adicionar BYE se necessário
+            while (faseAtual.length < tamanho) {
+                faseAtual.push({ nome: "BYE" });
+            }
+
+            let rounds = Math.log2(tamanho);
+
+            for (let r = 0; r < rounds; r++) {
+
+                const roundDiv = document.createElement("div");
+                roundDiv.classList.add("round");
+
+                const titulo = document.createElement("h3");
+
+                titulo.innerText =
+                    r === rounds - 1 ? "🏆 Final" :
+                        r === rounds - 2 ? "⚔️ Semifinal" :
+                            r === rounds - 3 ? "🔥 Quartas" :
+                                "Fase " + (r + 1);
+
+                roundDiv.appendChild(titulo);
+
+                for (let i = 0; i < faseAtual.length; i += 2) {
+
+                    const match = document.createElement("div");
+                    match.classList.add("match");
+
+                    const teamA = document.createElement("div");
+                    teamA.classList.add("team");
+                    teamA.innerText = faseAtual[i]?.nome || "BYE";
+
+                    const teamB = document.createElement("div");
+                    teamB.classList.add("team");
+                    teamB.innerText = faseAtual[i + 1]?.nome || "BYE";
+
+                    match.appendChild(teamA);
+                    match.appendChild(teamB);
+
+                    roundDiv.appendChild(match);
+                }
+
+                container.appendChild(roundDiv);
+
+                // 🔥 Preparar próxima fase
+                faseAtual = new Array(faseAtual.length / 2)
+                    .fill(null)
+                    .map(() => ({ nome: "A definir" }));
+            }
+        }
+
+        // ------------------
+        // Carregar Equipes
+        // ------------------
+        async function carregarEquipas() {
+            const chavesSnap = await getDocs(collection(db, "chaves"));
+            let campeonato = null;
+
+            chavesSnap.forEach(docSnap => {
+                const d = docSnap.data();
+                if (d.chave === chaveURL) campeonato = d;
+            });
+
+            if (!campeonato || !campeonato.equipas) {
+                document.getElementById("bracketContainer").innerHTML =
+                    "<p>Nenhuma equipa associada a este campeonato.</p>";
+                return;
+            }
+
+            equipes = campeonato.equipas;
+            gerarBracket();
+        }
+
+        // ------------------
+        // Criar Equipe Botão
+        // ------------------
+        async function criarEquipes() {
+            const formato = parseInt(document.getElementById("formato").value);
+            if (jogadores.length < formato) {
+                Swal.fire({ icon: "error", title: "Erro", text: `Adicione pelo menos ${formato} jogadores`, timer: 2000, showConfirmButton: false });
+                return;
+            }
+
+            // Embaralhar jogadores
+            let copia = [...jogadores].sort(() => Math.random() - 0.5);
+
+            Swal.fire({ title: "Criando equipas...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            try {
+                // Adicionar jogadores na tabela "jogadores"
+                for (const jogador of jogadores) {
+                    const jogadorRef = collection(db, "jogadores");
+                    // Evita duplicados pelo ID
+                    const existing = await getDocs(collection(db, "jogadores"));
+                    const jaExiste = existing.docs.some(docSnap => docSnap.id === jogador.id);
+                    if (!jaExiste) {
+                        await addDoc(jogadorRef, { id: jogador.id, nome: jogador.nome, criadoEm: new Date(), criadoPor: currentUser.email });
+                    }
+                }
+
+                // Criar equipes
+                while (copia.length >= formato) {
+                    const equipa = copia.splice(0, formato);
+                    await addDoc(collection(db, "equipas"), { equipa, criadoEm: new Date(), criadoPor: currentUser.email });
+                }
+
+                jogadores = [];
+                atualizarTabelaJogadores();
+                Swal.close();
+                Swal.fire({ icon: "success", title: "Equipas e jogadores criados!", timer: 1500, showConfirmButton: false });
+                carregarDashboard();
+            } catch (e) {
+                Swal.close();
+                console.error(e);
+                Swal.fire({ icon: "error", title: "Erro ao criar equipas ou jogadores" });
+            }
+        }
+
+        // ---------------- ADMIN PANEL ----------------
+        async function carregarAdminPanel() {
+            const tbody = document.querySelector("#adminTable tbody");
+            tbody.innerHTML = "";
+            try {
+                const snap = await getDocs(collection(db, "admins"));
+                if (snap.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;">Nenhum admin cadastrado.</td></tr>`; return; }
+                snap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+            <td>${d.nome}</td>
+            <td>${d.email}</td>
+            <td>${d.cargo}</td>
+            <td>
+                <button class="primary" style="padding:5px 10px;font-size:13px;" onclick='criarOuEditarUser("${docSnap.id}")'><i class="fa-solid fa-pen"></i></button>
+                <button class="delete-btn" style="padding:5px 10px;font-size:13px;" onclick='deletarUser("${docSnap.id}")'><i class="fa-solid fa-trash"></i></button>
+                <button class="primary" style="padding:5px 10px;font-size:13px;background:#444;" onclick='verUser("${docSnap.id}")'><i class="fa-solid fa-eye"></i></button>
+            </td>`;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) { console.error(e); tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Erro ao carregar admins.</td></tr>`; }
+        }
+
+        // ------------------
+        // CRiar/Editar User Botão
+        // ------------------
+        async function criarOuEditarUser(docId = null) {
+            let userData = { nome: "", email: "", cargo: "user" };
+            if (docId) {
+                const snap = await getDocs(collection(db, "admins"));
+                snap.forEach(docSnap => { if (docSnap.id === docId) userData = docSnap.data(); });
+            }
+
+            const { value: formValues } = await Swal.fire({
+                title: docId ? "Editar Usuário" : "Criar Usuário",
+                html:
+                    `<input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">` +
+                    `<input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">` +
+                    `<select id="swalCargo" class="swal2-select">
+                <option value="ceo" ${userData.cargo.toLowerCase() === "ceo" ? "selected" : ""}>CEO</option>
+                <option value="admin" ${userData.cargo === "admin" ? "selected" : ""}>Admin</option>
+                <option value="moderador" ${userData.cargo === "moderador" ? "selected" : ""}>Moderador</option>
+                <option value="user" ${userData.cargo === "user" ? "selected" : ""}>Jogador</option>
+            </select>`,
+                focusConfirm: false,
+                showCancelButton: true,
+                preConfirm: () => {
+                    return {
+                        nome: document.getElementById("swalNome").value.trim(),
+                        email: document.getElementById("swalEmail").value.trim(),
+                        cargo: document.getElementById("swalCargo").value
+                    };
+                }
+            });
+
+            if (!formValues) return;
+
+            try {
+                if (docId) {
+                    await updateDoc(doc(db, "admins", docId), formValues);
+                    Swal.fire({ icon: "success", title: "Usuário atualizado!" });
+                } else {
+                    await addDoc(collection(db, "admins"), formValues);
+                    Swal.fire({ icon: "success", title: "Usuário criado!" });
+                }
+                carregarAdminPanel();
+            } catch (e) { console.error(e); Swal.fire({ icon: "error", title: "Erro ao salvar usuário" }); }
+        }
+
+        // ------------------
+        // Apagar User Botão
+        // ------------------
+        async function deletarUser(docId) {
+            const confirm = await Swal.fire({
+                icon: "warning",
+                title: "Tem certeza?",
+                text: "Esta ação não pode ser desfeita!",
+                showCancelButton: true,
+                confirmButtonText: "Sim, deletar",
+                cancelButtonText: "Cancelar"
+            });
+            if (confirm.isConfirmed) {
+                try { await deleteDoc(doc(db, "admins", docId)); Swal.fire({ icon: "success", title: "Usuário deletado!" }); carregarAdminPanel(); }
+                catch (e) { console.error(e); Swal.fire({ icon: "error", title: "Erro ao deletar usuário" }); }
+            }
+        }
+
+        // ------------------
+        // Ver User Botão
+        // ------------------
+        async function verUser(docId) {
+            const snap = await getDocs(collection(db, "admins"));
+            let data = null;
+            snap.forEach(docSnap => { if (docSnap.id === docId) data = docSnap.data(); });
+            if (!data) return;
+            Swal.fire({
+                title: `Detalhes de ${data.nome}`,
+                html: `<p><strong>Nome:</strong> ${data.nome}</p>
+               <p><strong>Email:</strong> ${data.email}</p>
+               <p><strong>Cargo:</strong> ${data.cargo}</p>`,
+                confirmButtonText: "Fechar"
+            });
+        }
+
+        // ------------------
+        // Configuração Botão
+        // ------------------
+        document.getElementById("btnSettings").onclick = async () => {
+            const temaAtual = document.body.classList.contains("light") ? "light" : "dark";
+
+            const { value: formValues } = await Swal.fire({
+                title: "⚙️ Configurações",
+                html: `
+            <label style="display:block;text-align:left;margin-bottom:5px;">Nome:</label>
+            <input id="swalNomeUser" class="swal2-input" value="${currentUserNome}">
+
+            <label style="display:block;text-align:left;margin:15px 0 5px;">Tema:</label>
+            <select id="swalTema" class="swal2-select">
+                <option value="dark" ${temaAtual === "dark" ? "selected" : ""}>🌙 Escuro</option>
+                <option value="light" ${temaAtual === "light" ? "selected" : ""}>☀️ Claro</option>
+            </select>
+
+            <label style="display:block;text-align:left;margin:15px 0 5px;">Foto de Perfil:</label>
+            <input type="file" id="swalFotoUser" class="swal2-file" accept="image/*">
+        `,
+                showCancelButton: true,
+                confirmButtonText: "Salvar Alterações",
+                preConfirm: () => ({
+                    nome: document.getElementById("swalNomeUser").value,
+                    tema: document.getElementById("swalTema").value,
+                    foto: document.getElementById("swalFotoUser").files[0]
+                })
+            });
+
+            if (!formValues) return;
+
+            try {
+                // ===== ATUALIZAR NOME =====
+                const snap = await getDocs(collection(db, "admins"));
+                let docId = null;
+                snap.forEach(docSnap => {
+                    if (docSnap.data().email === currentUser.email) docId = docSnap.id;
+                });
+
+                if (docId) {
+                    await updateDoc(doc(db, "admins", docId), { nome: formValues.nome });
+                    currentUserNome = formValues.nome;
+                    document.getElementById("userNomeSidebar").innerText = formValues.nome;
+                }
+
+                // ===== ATUALIZAR TEMA =====
+                if (formValues.tema === "light") {
+                    document.body.classList.add("light");
+                    localStorage.setItem("temaMK", "light");
+                } else {
+                    document.body.classList.remove("light");
+                    localStorage.setItem("temaMK", "dark");
+                }
+
+                // ===== UPLOAD FOTO =====
+                if (formValues.foto && docId) {
+                    Swal.fire({
+                        title: "Enviando foto...",
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    const reader = new FileReader();
+                    reader.onload = async function (evt) {
+                        const fotoBase64 = evt.target.result;
+
+                        // Atualiza Firestore
+                        await updateDoc(doc(db, "admins", docId), { photoBase64: fotoBase64 });
+
+                        // Atualiza interface
+                        document.getElementById("userPhoto").src = fotoBase64;
+
+                        Swal.close();
+                        Swal.fire({ icon: "success", title: "Foto atualizada!" });
+                    };
+                    reader.readAsDataURL(formValues.foto);
+                } else {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Configurações atualizadas!"
+                    });
+                }
+
+            } catch (e) {
+                console.error(e);
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro ao atualizar configurações"
+                });
+            }
+        };
+
+        document.getElementById("btnLogoutIcon").onclick = async () => {
+
+            const confirm = await Swal.fire({
+                icon: "warning",
+                title: "Sair da conta?",
+                text: "Tem certeza que deseja terminar a sessão?",
+                showCancelButton: true,
+                confirmButtonText: "Sim, sair",
+                cancelButtonText: "Cancelar"
+            });
+
+            if (confirm.isConfirmed) {
+                await signOut(auth);
+                window.location.href = "login.html";
+            }
+        };
+
+        async function atualizarSidebar(userData) {
+            // Foto
+            const userPhoto = document.getElementById("userPhoto");
+            userPhoto.src = userData.photoBase64 || userData.photoURL || "https://i.imgur.com/4Z7Dz7S.png";
+
+            // Nome
+            const userNome = document.getElementById("userNomeSidebar");
+            userNome.textContent = userData.nome || "Nome";
+
+            // Cargo
+            const cargoSpan = document.getElementById("userCargoSidebar");
+            cargoSpan.className = ""; // limpa classes anteriores
+
+            const cargo = (userData.cargo || "user").toLowerCase();
+
+            switch (cargo) {
+                case "ceo":
+                    cargoSpan.classList.add("badgeCargo", "badgeCEO");
+                    cargoSpan.textContent = "👑 CEO";
+                    break;
+                case "admin":
+                    cargoSpan.classList.add("badgeCargo", "badgeAdmin");
+                    cargoSpan.textContent = "🛡️ Admin";
+                    break;
+                case "moderador":
+                    cargoSpan.classList.add("badgeCargo", "badgeModerador");
+                    cargoSpan.textContent = "⚔️ Moderador";
+                    break;
+                default:
+                    cargoSpan.classList.add("badgeCargo", "badgeUser");
+                    cargoSpan.textContent = "👤 Usuário";
+                    break;
+            }
+        }
+
+        onAuthStateChanged(auth, async user => {
+            if (!user) { window.location.href = "login.html"; return; }
+            currentUser = user;
+
+            try {
+                const snap = await getDocs(collection(db, "admins"));
+                let userData = null;
+                snap.forEach(docSnap => {
+                    if (docSnap.data().email === user.email) {
+                        userData = docSnap.data();
+                        userData.docId = docSnap.id; // se precisar do id depois
+                    }
+                });
+
+                if (!userData) {
+                    Swal.fire({ icon: "error", title: "Sem permissão", text: "Seu usuário não é admin", timer: 2500, showConfirmButton: false });
+                    document.getElementById("mainContent").innerHTML = "<p>Você não tem permissão para acessar este dashboard.</p>";
+                    return;
+                }
+
+                currentUserNome = userData.nome;
+                currentUserRole = userData.cargo;
+
+                // Mostrar botão Admin só se CEO
+                if ((currentUserRole || "").toLowerCase() === "ceo") {
+                    document.getElementById("btnAdmin").style.display = "flex";
+                }
+
+                // Atualiza sidebar com foto, nome e cargo
+                await atualizarSidebar(userData);
+
+                // Carregar tema salvo
+                const temaSalvo = localStorage.getItem("temaMK");
+                if (temaSalvo === "light") document.body.classList.add("light");
+
+                mostrarSecao("Dashboard");
+
+            } catch (e) {
+                console.error(e);
+                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível carregar os dados", timer: 2500, showConfirmButton: false });
+            }
+        });
+
+        // ---------------- SIDEBAR ----------------
+        document.getElementById("btnDashboard").onclick = () => mostrarSecao("Dashboard");
+        document.getElementById("btnCriar").onclick = () => mostrarSecao("Criar");
+        document.getElementById("btnVer").onclick = () => mostrarSecao("Ver");
+        document.getElementById("btnGerarChave").onclick = () => mostrarSecao("GerarChave");
+        document.getElementById("btnAdmin").onclick = () => mostrarSecao("Admin");
+    </script>
+</body>
+
+</html>

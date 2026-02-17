@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campeonato MK</title>
+
+    <!-- Font Awesome -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ==================== RESET ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 30px;
+        }
+
+        /* ==================== HEADER ==================== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        #tituloCampeonato {
+            flex: 1;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: #ff4d4d;
+            text-shadow: 0 0 10px #ff4d4d;
+        }
+
+        /* ==================== INFO + PERFIL ==================== */
+        .info-box,
+        .user-box,
+        .stats-box,
+        .btn-dashboard {
+            background: #1e1e2f;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .info-box {
+            flex: 1;
+            border-left: 6px solid #ff0000;
+        }
+
+        .info-box div {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .user-box {
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border-left: 6px solid #ff4d4d;
+        }
+
+        .user-box img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ff4d4d;
+            box-shadow: 0 0 15px #ff4d4d;
+        }
+
+        .user-box .user-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .user-box .user-role {
+            font-size: 12px;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 25px;
+            background: linear-gradient(270deg, #ff4d4d, #ff9900, #ff4d4d);
+            background-size: 200% 200%;
+            animation: gradientGlow 3s linear infinite;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* ==================== ESTATÍSTICAS ==================== */
+        .stats-box {
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 14px;
+            text-align: center;
+            border-left: 6px solid #00ccff;
+        }
+
+        .stats-box span {
+            display: block;
+            margin: 4px 0;
+        }
+
+        /* ==================== BOTÃO DASHBOARD ==================== */
+        .btn-dashboard {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            color: #fff;
+            border-radius: 12px;
+            border: 2px solid #ff4d4d;
+            background: #1e1e2f;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-dashboard:hover {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        /* ==================== BRACKET ==================== */
+        .bracket {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 50px;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .round h3 {
+            text-align: center;
+            color: #ff4d4d;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px #ff4d4d;
+        }
+
+        .match {
+            background: #1e1e2f;
+            padding: 12px;
+            border-radius: 12px;
+            width: 180px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .team {
+            padding: 6px;
+            margin: 4px 0;
+            background: #111;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .winner {
+            background: #004d00;
+        }
+
+        /* ==================== ANIMAÇÃO ==================== */
+        @keyframes gradientGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* ==================== RESPONSIVO ==================== */
+        @media(max-width: 900px) {
+            header {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .user-box {
+                width: 100%;
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+
+            .user-box .user-role {
+                margin-left: 10px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- BOTÃO VOLTAR DASHBOARD -->
+    <a href="dashboard.html" class="btn-dashboard">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <header>
+        <div class="info-box" id="infoCampeonato">Carregando...</div>
+        <h2 id="tituloCampeonato">Carregando...</h2>
+        <div class="user-box">
+            <img alt="Avatar" id="userAvatar">
+            <div>
+                <div class="user-name" id="userName">Carregando...</div>
+                <div class="user-role" id="userCargo">Carregando...</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- BOX DE ESTATÍSTICAS -->
+    <div class="stats-box" id="statsBox">
+        <span>Total de equipes: 0</span>
+        <span>Equipes restantes: 0</span>
+    </div>
+
+    <div class="bracket" id="bracketContainer"></div>
+
+    <script type="module">
+        import { db } from './firebase.js';
+        import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const chaveURL = urlParams.get("chave");
+        const userID = urlParams.get("user"); // Supondo que o ID do admin esteja na URL
+
+        let equipes = [];
+
+        // ---------------- CARREGAR USUÁRIO ----------------
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Supondo que userID é o UID ou ID do documento do admin logado
+        async function carregarUsuario(userID) {
+            try {
+                if (!userID) return; // Sem ID, nada a fazer
+
+                // 1. Referência ao documento específico dentro da collection 'admins'
+                const adminRef = doc(db, "admins", userID);
+
+                // 2. Pega os dados do documento
+                const adminSnap = await getDoc(adminRef);
+
+                if (!adminSnap.exists()) {
+                    console.warn("Usuário não encontrado na collection admins.");
+                    return;
+                }
+
+                // 3. Extrai os dados
+                const adminData = adminSnap.data();
+
+                // 4. Atualiza o DOM
+                document.getElementById("userName").innerText = adminData.nome || "Administrador";
+                document.getElementById("userCargo").innerText = adminData.cargo || "CEO";
+                document.getElementById("userAvatar").src = adminData.photoBase64 || "https://via.placeholder.com/70";
+
+            } catch (error) {
+                console.error("Erro ao carregar usuário:", error);
+            }
+        }
+
+        // ---------------- CARREGAR CAMPEONATO ----------------
+        async function carregarCampeonato() {
+            const chavesSnap = await getDocs(collection(db, "chaves"));
+            let campeonato = null;
+
+            chavesSnap.forEach(docSnap => {
+                const d = docSnap.data();
+                if (d.chave === chaveURL) campeonato = d;
+            });
+
+            if (!campeonato) {
+                document.getElementById("tituloCampeonato").innerText = "Campeonato não encontrado";
+                return;
+            }
+
+            document.getElementById("tituloCampeonato").innerText = `${campeonato.chave}`;
+
+            document.getElementById("infoCampeonato").innerHTML = `
+        <div><b>Tipo:</b> ${campeonato.tipo}</div>
+        <div><b>Local:</b> ${campeonato.local}</div>
+        <div><b>Arma:</b> ${campeonato.arma}</div>
+        <div><b>Responsável:</b> ${campeonato.criadoPor}</div>
+    `;
+
+            carregarEquipas();
+            carregarUsuario();
+        }
+
+        // ---------------- CARREGAR EQUIPES ----------------
+        async function carregarEquipas() {
+            const snap = await getDocs(collection(db, "equipas"));
+            equipes = [];
+
+            snap.forEach(docSnap => {
+                equipes.push({
+                    id: docSnap.id,
+                    nome: "Equipe " + docSnap.id.slice(0, 4)
+                });
+            });
+
+            document.getElementById("statsBox").innerHTML = `
+        <span>Total de equipes: ${equipes.length}</span>
+        <span>Equipes restantes: ${equipes.length}</span>
+    `;
+
+            if (!equipes.length) {
+                document.getElementById("bracketContainer").innerHTML = "<p>Nenhuma equipe cadastrada.</p>";
+                return;
+            }
+
+            gerarBracket();
+        }
+
+        // ---------------- GERAR BRACKET ----------------
+        function gerarBracket() {
+            const container = document.getElementById("bracketContainer");
+            container.innerHTML = "";
+
+            let total = equipes.length;
+            let tamanho = 1;
+            while (tamanho < total) tamanho *= 2;
+            let rounds = Math.log2(tamanho);
+            let faseAtual = [...equipes];
+
+            for (let r = 0; r < rounds; r++) {
+                const roundDiv = document.createElement("div");
+                roundDiv.classList.add("round");
+
+                const titulo = document.createElement("h3");
+                titulo.innerText =
+                    r === rounds - 1 ? "Final"
+                        : r === rounds - 2 ? "Semifinal"
+                            : r === rounds - 3 ? "Quartas"
+                                : "Fase " + (r + 1);
+
+                roundDiv.appendChild(titulo);
+
+                for (let i = 0; i < faseAtual.length; i += 2) {
+                    const match = document.createElement("div");
+                    match.classList.add("match");
+
+                    const teamA = document.createElement("div");
+                    teamA.classList.add("team");
+                    teamA.innerText = faseAtual[i] ? faseAtual[i].nome : "BYE";
+
+                    const teamB = document.createElement("div");
+                    teamB.classList.add("team");
+                    teamB.innerText = faseAtual[i + 1] ? faseAtual[i + 1].nome : "BYE";
+
+                    match.appendChild(teamA);
+                    match.appendChild(teamB);
+                    roundDiv.appendChild(match);
+                }
+
+                container.appendChild(roundDiv);
+                faseAtual = new Array(Math.ceil(faseAtual.length / 2)).fill(null);
+
+                // Atualiza equipes restantes
+                document.getElementById("statsBox").querySelectorAll('span')[1].innerText = `Equipes restantes: ${faseAtual.filter(x => x).length}`;
+            }
+        }
+
+        carregarCampeonato();
+    </script>
+
+</body>
+
+</html>
