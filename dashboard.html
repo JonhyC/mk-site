@@ -1246,21 +1246,21 @@
             }
 
             const html = `
-        <input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">
-        <input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">
-        <input id="swalSenha" type="password" class="swal2-input" placeholder="Senha (deixe vazio para não alterar)">
-        <select id="swalCargo" class="swal2-select">
-            <option value="ceo" ${userData.cargo.toLowerCase() === "ceo" ? "selected" : ""}>CEO</option>
-            <option value="admin" ${userData.cargo === "admin" ? "selected" : ""}>Admin</option>
-            <option value="moderador" ${userData.cargo === "moderador" ? "selected" : ""}>Moderador</option>
-            <option value="user" ${userData.cargo === "user" ? "selected" : ""}>Jogador</option>
-        </select>
-        <div style="margin-top:10px; text-align:center;">
-            <img id="swalPreview" src="${userData.photoBase64 || 'https://via.placeholder.com/100'}" 
-                 style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:5px; border:2px solid #ff4d4d;">
-            <input id="swalPhoto" type="file" accept="image/*" style="margin-top:5px;">
-        </div>
-    `;
+                <input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">
+                <input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">
+                <input id="swalSenha" type="password" class="swal2-input" placeholder="Senha (deixe vazio para não alterar)">
+                <select id="swalCargo" class="swal2-select">
+                    <option value="ceo" ${userData.cargo.toLowerCase() === "ceo" ? "selected" : ""}>CEO</option>
+                    <option value="admin" ${userData.cargo === "admin" ? "selected" : ""}>Admin</option>
+                    <option value="moderador" ${userData.cargo === "moderador" ? "selected" : ""}>Moderador</option>
+                    <option value="user" ${userData.cargo === "user" ? "selected" : ""}>Jogador</option>
+                </select>
+                <div style="margin-top:10px; text-align:center;">
+                    <img id="swalPreview" src="${userData.photoBase64 || 'https://via.placeholder.com/100'}" 
+                        style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:5px; border:2px solid #ff4d4d;">
+                    <input id="swalPhoto" type="file" accept="image/*" style="margin-top:5px;">
+                </div>
+            `;
 
             const { value: formValues } = await Swal.fire({
                 title: docId ? "Editar Usuário" : "Criar Usuário",
