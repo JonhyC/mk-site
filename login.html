@@ -4,14 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MK Admin Login</title>
+    <title>MK Admin Login - Debug</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-
     <style>
+        /* estilos resumidos para foco no login */
         * {
             margin: 0;
             padding: 0;
@@ -124,16 +120,20 @@
 </head>
 
 <body>
+
     <div class="login-container">
         <img src="logo.webp" class="logo" alt="MK Logo">
-        <h2 style="color:white;margin-bottom:20px;">Admin Login</h2>
+        <h2 style="color:white;margin-bottom:20px;">Admin Login - DEBUG</h2>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Senha">
         <button id="btnLogin">Entrar</button>
     </div>
 
-    <script>
-        // Configuração Firebase
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Config Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB-kjGlsQFYdPrZ5LUnNpl--pagrIfVfi4",
             authDomain: "mk-site-8140d.firebaseapp.com",
@@ -143,30 +143,46 @@
             appId: "1:526637494117:web:07ead2e05b8be00db3fb8c"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        console.log("🔥 Inicializando Firebase...");
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        console.log("✅ Firebase inicializado", app);
 
-        document.getElementById("btnLogin").addEventListener("click", async () => {
+        const btn = document.getElementById("btnLogin");
+
+        btn.addEventListener("click", async () => {
+            console.log("🖱 Botão clicado!");
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
 
+            console.log("📧 Email digitado:", email);
+            console.log("🔑 Senha digitada:", password ? "******" : "(vazio)");
+
             if (!email || !password) {
+                console.warn("⚠️ Campos vazios detectados");
                 Swal.fire({ icon: "error", title: "Erro", text: "Preencha email e senha!", timer: 2000, showConfirmButton: false });
                 return;
             }
 
             Swal.fire({ title: "Verificando...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            console.log("⏳ Tentando login no Firebase Auth...");
 
             try {
-                await auth.signInWithEmailAndPassword(email, password);
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log("✅ Login bem-sucedido!", userCredential);
+                console.log("UID do usuário:", userCredential.user.uid);
+                console.log("Email autenticado:", userCredential.user.email);
 
                 Swal.close();
                 Swal.fire({ icon: "success", title: "Login OK", timer: 1000, showConfirmButton: false });
 
-                setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+                console.log("➡️ Redirecionando para dashboard...");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
 
             } catch (err) {
-                Swal.close();
+                console.error("❌ Erro no login:", err);
                 let msg = "Falha no login";
                 if (err.code === "auth/user-not-found") msg = "Email não encontrado";
                 else if (err.code === "auth/wrong-password") msg = "Senha incorreta";
@@ -175,7 +191,9 @@
                 Swal.fire({ icon: "error", title: "Erro", text: msg, timer: 2000, showConfirmButton: false });
             }
         });
+
     </script>
+
 </body>
 
 </html>
