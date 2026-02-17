@@ -219,7 +219,7 @@
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 25px;
-             
+
             transition: all 0.3s ease;
         }
 
@@ -669,23 +669,26 @@
                     ativarBotao("btnAdmin");
                     main.innerHTML = `
                     <div class="card">
-                        <h3>🛠️ Admin Panel</h3>
-                        <button class="primary" id="btnCriarUser"><i class="fa-solid fa-user-plus"></i> Criar Novo Usuário</button>
-                        <div style="margin-top:20px; overflow-x:auto;">
-                            <table id="adminTable">
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Email</th>
-                                        <th>Cargo</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>`;
-                    document.getElementById("btnCriarUser").onclick = () => criarOuEditarUser();
+                            <h3>🛠️ Admin Panel</h3>
+                            <button class="primary" id="btnCriarUser"><i class="fa-solid fa-user-plus"></i> Criar Novo Usuário</button>
+                            <div style="margin-top:20px; overflow-x:auto;">
+                                <table id="adminTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Cargo</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    // **Aqui é o ponto importante:**
+                    document.getElementById("btnCriarUser").addEventListener("click", () => criarOuEditarUser());
+
+                    // Chama a função que carrega a tabela
                     carregarAdminPanel();
                     break;
 
@@ -1187,110 +1190,188 @@
             }
         }
 
-        // ---------------- ADMIN PANEL ----------------
+        // ---------------- IMPORTS FIRESTORE ----------------
+
+        // ----- PAINEL ADMIN -----
         async function carregarAdminPanel() {
             const tbody = document.querySelector("#adminTable tbody");
             tbody.innerHTML = "";
+
             try {
                 const snap = await getDocs(collection(db, "admins"));
-                if (snap.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;">Nenhum admin cadastrado.</td></tr>`; return; }
+
+                if (snap.empty) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;">Nenhum admin cadastrado.</td></tr>`;
+                    return;
+                }
+
                 snap.forEach(docSnap => {
                     const d = docSnap.data();
                     const tr = document.createElement("tr");
+
                     tr.innerHTML = `
-            <td>${d.nome}</td>
-            <td>${d.email}</td>
-            <td>${d.cargo}</td>
-            <td>
-                <button class="primary" style="padding:5px 10px;font-size:13px;" onclick='criarOuEditarUser("${docSnap.id}")'><i class="fa-solid fa-pen"></i></button>
-                <button class="delete-btn" style="padding:5px 10px;font-size:13px;" onclick='deletarUser("${docSnap.id}")'><i class="fa-solid fa-trash"></i></button>
-                <button class="primary" style="padding:5px 10px;font-size:13px;background:#444;" onclick='verUser("${docSnap.id}")'><i class="fa-solid fa-eye"></i></button>
-            </td>`;
+                <td>${d.nome}</td>
+                <td>${d.email}</td>
+                <td>${d.cargo}</td>
+                <td>
+                    <button class="edit-btn" style="padding:5px 10px;font-size:13px;"><i class="fa-solid fa-pen"></i></button>
+                    <button class="delete-btn" style="padding:5px 10px;font-size:13px;"><i class="fa-solid fa-trash"></i></button>
+                    <button class="view-btn" style="padding:5px 10px;font-size:13px;background:#444;"><i class="fa-solid fa-eye"></i></button>
+                </td>
+            `;
+
                     tbody.appendChild(tr);
+
+                    // Event listeners para cada botão
+                    tr.querySelector(".edit-btn").addEventListener("click", () => criarOuEditarUser(docSnap.id));
+                    tr.querySelector(".delete-btn").addEventListener("click", () => deletarUser(docSnap.id));
+                    tr.querySelector(".view-btn").addEventListener("click", () => verUser(docSnap.id));
                 });
-            } catch (e) { console.error(e); tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Erro ao carregar admins.</td></tr>`; }
+
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Erro ao carregar admins.</td></tr>`;
+            }
         }
 
-        // ------------------
-        // CRiar/Editar User Botão
-        // ------------------
+        // ----- CRIAR OU EDITAR USUÁRIO -----
         async function criarOuEditarUser(docId = null) {
-            let userData = { nome: "", email: "", cargo: "user" };
+            let userData = { nome: "", email: "", cargo: "user", senha: "", photoBase64: "" };
+
             if (docId) {
-                const snap = await getDocs(collection(db, "admins"));
-                snap.forEach(docSnap => { if (docSnap.id === docId) userData = docSnap.data(); });
+                // Pega dados do admin se estiver editando
+                const adminRef = doc(db, "admins", docId);
+                const snap = await getDoc(adminRef);
+                if (snap.exists()) userData = snap.data();
             }
+
+            const html = `
+        <input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">
+        <input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">
+        <input id="swalSenha" type="password" class="swal2-input" placeholder="Senha (deixe vazio para não alterar)">
+        <select id="swalCargo" class="swal2-select">
+            <option value="ceo" ${userData.cargo.toLowerCase() === "ceo" ? "selected" : ""}>CEO</option>
+            <option value="admin" ${userData.cargo === "admin" ? "selected" : ""}>Admin</option>
+            <option value="moderador" ${userData.cargo === "moderador" ? "selected" : ""}>Moderador</option>
+            <option value="user" ${userData.cargo === "user" ? "selected" : ""}>Jogador</option>
+        </select>
+        <div style="margin-top:10px; text-align:center;">
+            <img id="swalPreview" src="${userData.photoBase64 || 'https://via.placeholder.com/100'}" 
+                 style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:5px; border:2px solid #ff4d4d;">
+            <input id="swalPhoto" type="file" accept="image/*" style="margin-top:5px;">
+        </div>
+    `;
 
             const { value: formValues } = await Swal.fire({
                 title: docId ? "Editar Usuário" : "Criar Usuário",
-                html:
-                    `<input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">` +
-                    `<input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">` +
-                    `<select id="swalCargo" class="swal2-select">
-                <option value="ceo" ${userData.cargo.toLowerCase() === "ceo" ? "selected" : ""}>CEO</option>
-                <option value="admin" ${userData.cargo === "admin" ? "selected" : ""}>Admin</option>
-                <option value="moderador" ${userData.cargo === "moderador" ? "selected" : ""}>Moderador</option>
-                <option value="user" ${userData.cargo === "user" ? "selected" : ""}>Jogador</option>
-            </select>`,
+                html,
                 focusConfirm: false,
                 showCancelButton: true,
-                preConfirm: () => {
-                    return {
-                        nome: document.getElementById("swalNome").value.trim(),
-                        email: document.getElementById("swalEmail").value.trim(),
-                        cargo: document.getElementById("swalCargo").value
-                    };
-                }
+                didOpen: () => {
+                    const photoInput = document.getElementById("swalPhoto");
+                    const preview = document.getElementById("swalPreview");
+
+                    photoInput.addEventListener("change", (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = () => preview.src = reader.result;
+                        reader.readAsDataURL(file);
+                    });
+                },
+                preConfirm: () => ({
+                    nome: document.getElementById("swalNome").value.trim(),
+                    email: document.getElementById("swalEmail").value.trim(),
+                    cargo: document.getElementById("swalCargo").value,
+                    senha: document.getElementById("swalSenha").value,
+                    photoBase64: document.getElementById("swalPreview").src
+                })
             });
 
             if (!formValues) return;
 
             try {
                 if (docId) {
-                    await updateDoc(doc(db, "admins", docId), formValues);
+                    const dataToUpdate = { ...formValues };
+                    if (!dataToUpdate.senha) delete dataToUpdate.senha; // Não sobrescreve senha vazia
+                    await updateDoc(doc(db, "admins", docId), dataToUpdate);
                     Swal.fire({ icon: "success", title: "Usuário atualizado!" });
                 } else {
+                    if (!formValues.senha) {
+                        Swal.fire({ icon: "error", title: "É necessário definir uma senha!" });
+                        return;
+                    }
                     await addDoc(collection(db, "admins"), formValues);
                     Swal.fire({ icon: "success", title: "Usuário criado!" });
                 }
                 carregarAdminPanel();
-            } catch (e) { console.error(e); Swal.fire({ icon: "error", title: "Erro ao salvar usuário" }); }
-        }
-
-        // ------------------
-        // Apagar User Botão
-        // ------------------
-        async function deletarUser(docId) {
-            const confirm = await Swal.fire({
-                icon: "warning",
-                title: "Tem certeza?",
-                text: "Esta ação não pode ser desfeita!",
-                showCancelButton: true,
-                confirmButtonText: "Sim, deletar",
-                cancelButtonText: "Cancelar"
-            });
-            if (confirm.isConfirmed) {
-                try { await deleteDoc(doc(db, "admins", docId)); Swal.fire({ icon: "success", title: "Usuário deletado!" }); carregarAdminPanel(); }
-                catch (e) { console.error(e); Swal.fire({ icon: "error", title: "Erro ao deletar usuário" }); }
+            } catch (e) {
+                console.error(e);
+                Swal.fire({ icon: "error", title: "Erro ao salvar usuário" });
             }
         }
 
-        // ------------------
-        // Ver User Botão
-        // ------------------
-        async function verUser(docId) {
-            const snap = await getDocs(collection(db, "admins"));
-            let data = null;
-            snap.forEach(docSnap => { if (docSnap.id === docId) data = docSnap.data(); });
-            if (!data) return;
-            Swal.fire({
-                title: `Detalhes de ${data.nome}`,
-                html: `<p><strong>Nome:</strong> ${data.nome}</p>
-               <p><strong>Email:</strong> ${data.email}</p>
-               <p><strong>Cargo:</strong> ${data.cargo}</p>`,
-                confirmButtonText: "Fechar"
-            });
+        // ----- DELETAR USUÁRIO -----
+        async function deletarUser(docId) {
+            try {
+                const result = await Swal.fire({
+                    icon: "warning",
+                    title: "Tem certeza?",
+                    text: "Esta ação não pode ser desfeita!",
+                    showCancelButton: true,
+                    confirmButtonText: "Sim, deletar",
+                    cancelButtonText: "Cancelar",
+                    focusCancel: true
+                });
+
+                if (!result.isConfirmed) return;
+
+                await deleteDoc(doc(db, "admins", docId));
+
+                await Swal.fire({ icon: "success", title: "Usuário deletado!", timer: 1500, showConfirmButton: false });
+                carregarAdminPanel();
+            } catch (error) {
+                console.error(error);
+                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível deletar o usuário." });
+            }
         }
+
+        // ----- VER DETALHES DO USUÁRIO -----
+        async function verUser(docId) {
+            try {
+                const adminRef = doc(db, "admins", docId);
+                const snap = await getDoc(adminRef);
+                if (!snap.exists()) {
+                    Swal.fire({ icon: "error", title: "Usuário não encontrado" });
+                    return;
+                }
+
+                const data = snap.data();
+
+                Swal.fire({
+                    title: `Detalhes de ${data.nome || "Usuário"}`,
+                    html: `
+                <div style="text-align:center; margin-bottom:15px;">
+                    <img src="${data.photoBase64 || 'https://via.placeholder.com/80'}" 
+                         alt="Avatar" style="width:80px; height:80px; border-radius:50%; border:2px solid #ff4d4d; box-shadow:0 0 10px #ff4d4d;">
+                </div>
+                <p><strong>Nome:</strong> ${data.nome || "-"}</p>
+                <p><strong>Email:</strong> ${data.email || "-"}</p>
+                <p><strong>Cargo:</strong> ${data.cargo || "-"}</p>
+                <p><strong>Senha definida:</strong> ${data.senha ? "Sim" : "Não"}</p>
+            `,
+                    confirmButtonText: "Fechar",
+                    width: 350
+                });
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível carregar os detalhes do usuário." });
+            }
+        }
+
+        // ----- INICIALIZAÇÃO -----
+        document.addEventListener("DOMContentLoaded", carregarAdminPanel);
 
         // ------------------
         // Configuração Botão
