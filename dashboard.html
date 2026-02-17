@@ -497,29 +497,112 @@
         }
 
         /* ======================== MOBILE LAYOUT ======================== */
+        /* ======================== MOBILE FULL RESPONSIVE ======================== */
         @media (max-width: 900px) {
 
+            body {
+                flex-direction: column;
+                overflow: auto;
+                /* importante para scroll */
+            }
+
+            /* MAIN ocupa tudo */
+            .main {
+                padding: 20px;
+                padding-bottom: 100px;
+                /* espaço para bottom bar */
+            }
+
+            /* SIDEBAR vira bottom bar */
+            .sidebar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 75px;
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0 10px;
+                z-index: 1000;
+                border-top: 1px solid #222;
+            }
+
+            /* Esconde logo */
+            .sidebar .logo {
+                display: none;
+            }
+
+            /* Botões ficam só ícones */
+            .sidebar button {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                font-size: 0;
+                /* esconde texto */
+                gap: 5px;
+                padding: 8px;
+                margin: 0;
+                border-left: none;
+            }
+
+            .sidebar button i {
+                font-size: 20px;
+            }
+
+            .sidebar button.active {
+                color: #ff0000;
+                background: none;
+                border: none;
+            }
+
+            .sidebar button:hover {
+                background: none;
+                border: none;
+            }
+
+            /* Esconde user box da sidebar */
             .sidebar-user {
                 display: none;
             }
 
+            /* FOTO FLUTUANTE */
             .mobile-user-photo {
                 position: fixed;
                 right: 15px;
-                bottom: 85px;
-                width: 55px;
-                height: 55px;
+                bottom: 95px;
+                width: 58px;
+                height: 58px;
                 border-radius: 50%;
                 object-fit: cover;
                 border: 3px solid #ff0000;
-                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
                 z-index: 1100;
                 cursor: pointer;
-                transition: 0.3s;
+                transition: transform 0.2s ease;
+                background: #111;
             }
 
             .mobile-user-photo:active {
-                transform: scale(0.95);
+                transform: scale(0.92);
+            }
+
+            /* Ajustes extras para tabelas no mobile */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            /* Cards menos espaçados */
+            .card {
+                padding: 18px;
+            }
+
+            .stats-grid,
+            .championship-grid,
+            .players-grid {
+                gap: 15px;
             }
         }
     </style>
