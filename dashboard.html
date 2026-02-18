@@ -312,6 +312,162 @@
             gap: 15px;
         }
 
+        /* ======================== ADMIN GRID ======================== */
+        .admin-dashboard {
+            display: flex;
+            height: 100%;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* SIDEBAR */
+        .admin-sidebar {
+            width: 240px;
+            background: linear-gradient(180deg, #1f1f1f, #121212);
+            color: white;
+            padding: 25px;
+        }
+
+        .admin-sidebar h2 {
+            margin-bottom: 30px;
+            color: #ff4d4d;
+        }
+
+        .admin-sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .admin-sidebar li {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .admin-sidebar li:hover,
+        .admin-sidebar .active {
+            background: #ff4d4d;
+        }
+
+        /* CONTENT */
+        .admin-content {
+            flex: 1;
+            padding: 30px;
+            background: #0f0f0f;
+            color: white;
+            overflow-y: auto;
+        }
+
+        /* HEADER */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        /* STATS */
+        .admin-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: #ff4d4d;
+        }
+
+        /* TABLE */
+        .admin-table-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .table-header {
+            margin-bottom: 15px;
+        }
+
+        .table-header input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #111;
+            color: white;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        #adminTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #adminTable th {
+            text-align: left;
+            padding: 12px;
+            background: #111;
+        }
+
+        #adminTable td {
+            padding: 12px;
+            border-bottom: 1px solid #222;
+        }
+
+        #adminTable tr:hover {
+            background: #222;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .view-btn {
+            background: #444;
+            color: white;
+        }
+
         /* ======================== TABLES ======================== */
         table {
             width: 100%;
@@ -615,7 +771,8 @@
         <button id="btnCriar"><i class="fa-solid fa-plus"></i> Adicionar Jogadores</button>
         <button id="btnGerarChave"><i class="fa-solid fa-key"></i> Gerar Chave</button>
         <button id="btnVer"><i class="fa-solid fa-eye"></i> Ver Equipes</button>
-        <button id="btnAdmin" style="display:none;"><i class="fa-solid fa-user-shield"></i> Painel Administração</button>
+        <button id="btnAdmin" style="display:none;"><i class="fa-solid fa-user-shield"></i> Painel
+            Administração</button>
 
         <div class="sidebar-user" id="sidebarUserBox">
             <div class="user-info">
@@ -778,28 +935,77 @@
 
                 case "Admin":
                     ativarBotao("btnAdmin");
-                    main.innerHTML = `
-                    <div class="card">
-                            <h3>🛠️ Admin Panel</h3>
-                            <button class="primary" id="btnCriarUser"><i class="fa-solid fa-user-plus"></i> Criar Novo Usuário</button>
-                            <div style="margin-top:20px; overflow-x:auto;">
-                                <table id="adminTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Nome</th>
-                                            <th>Email</th>
-                                            <th>Cargo</th>
-                                            <th>Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>`;
-                    // **Aqui é o ponto importante:**
-                    document.getElementById("btnCriarUser").addEventListener("click", () => criarOuEditarUser());
 
-                    // Chama a função que carrega a tabela
+                    main.innerHTML = `
+                    <div class="admin-dashboard">
+
+                        <!-- SIDEBAR -->
+                        <aside class="admin-sidebar">
+                            <h2>⚡ AdminPro</h2>
+                            <ul>
+                                <li class="active">Dashboard</li>
+                                <li>Utilizadores</li>
+                                <li>Configurações</li>
+                            </ul>
+                        </aside>
+
+                        <!-- MAIN CONTENT -->
+                        <div class="admin-content">
+
+                            <!-- HEADER -->
+                            <div class="admin-header">
+                                <h1>Painel Administrativo</h1>
+                                <button class="primary" id="btnCriarUser">
+                                    <i class="fa-solid fa-user-plus"></i> Novo Utilizador
+                                </button>
+                            </div>
+
+                            <!-- STATS -->
+                            <div class="admin-stats">
+                                <div class="stat-card">
+                                    <h3 id="totalUsers">0</h3>
+                                    <p>Total Utilizadores</p>
+                                </div>
+
+                                <div class="stat-card">
+                                    <h3 id="totalAdmins">0</h3>
+                                    <p>Admins</p>
+                                </div>
+
+                                <div class="stat-card">
+                                    <h3 id="totalMods">0</h3>
+                                    <p>Moderadores</p>
+                                </div>
+                            </div>
+
+                            <!-- TABLE CARD -->
+                            <div class="admin-table-card">
+                                <div class="table-header">
+                                    <input type="text" id="searchUser" placeholder="🔍 Pesquisar utilizador...">
+                                </div>
+
+                                <div class="table-wrapper">
+                                    <table id="adminTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Utilizador</th>
+                                                <th>Email</th>
+                                                <th>Cargo</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    `;
+
+                    document.getElementById("btnCriarUser")
+                        .addEventListener("click", () => criarOuEditarUser());
+
                     carregarAdminPanel();
                     break;
 
@@ -1306,42 +1512,86 @@
         // ----- PAINEL ADMIN -----
         async function carregarAdminPanel() {
             const tbody = document.querySelector("#adminTable tbody");
+            const totalUsersEl = document.getElementById("totalUsers");
+            const totalAdminsEl = document.getElementById("totalAdmins");
+            const totalModsEl = document.getElementById("totalMods");
+
             tbody.innerHTML = "";
+
+            let totalUsers = 0;
+            let totalAdmins = 0;
+            let totalMods = 0;
 
             try {
                 const snap = await getDocs(collection(db, "admins"));
 
                 if (snap.empty) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:15px;">Nenhum admin cadastrado.</td></tr>`;
+                    tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center;padding:20px;">
+                        Nenhum utilizador encontrado.
+                    </td>
+                </tr>`;
                     return;
                 }
 
                 snap.forEach(docSnap => {
                     const d = docSnap.data();
+                    totalUsers++;
+
+                    if (d.cargo === "admin") totalAdmins++;
+                    if (d.cargo === "moderador") totalMods++;
+
                     const tr = document.createElement("tr");
 
                     tr.innerHTML = `
-                <td>${d.nome}</td>
+                <td>
+                    <div class="user-cell">
+                        <img class="user-avatar" 
+                            src="${d.photoBase64 || 'https://via.placeholder.com/40'}">
+                        <span>${d.nome}</span>
+                    </div>
+                </td>
                 <td>${d.email}</td>
                 <td>${d.cargo}</td>
                 <td>
-                    <button class="edit-btn" style="padding:5px 10px;font-size:13px;"><i class="fa-solid fa-pen"></i></button>
-                    <button class="delete-btn" style="padding:5px 10px;font-size:13px;"><i class="fa-solid fa-trash"></i></button>
-                    <button class="view-btn" style="padding:5px 10px;font-size:13px;background:#444;"><i class="fa-solid fa-eye"></i></button>
+                    <button class="action-btn edit-btn">Editar</button>
+                    <button class="action-btn delete-btn">Eliminar</button>
+                    <button class="action-btn view-btn">Ver</button>
                 </td>
             `;
 
                     tbody.appendChild(tr);
 
-                    // Event listeners para cada botão
-                    tr.querySelector(".edit-btn").addEventListener("click", () => criarOuEditarUser(docSnap.id));
-                    tr.querySelector(".delete-btn").addEventListener("click", () => deletarUser(docSnap.id));
-                    tr.querySelector(".view-btn").addEventListener("click", () => verUser(docSnap.id));
+                    tr.querySelector(".edit-btn")
+                        .addEventListener("click", () => criarOuEditarUser(docSnap.id));
+
+                    tr.querySelector(".delete-btn")
+                        .addEventListener("click", () => deletarUser(docSnap.id));
+
+                    tr.querySelector(".view-btn")
+                        .addEventListener("click", () => verUser(docSnap.id));
                 });
+
+                totalUsersEl.textContent = totalUsers;
+                totalAdminsEl.textContent = totalAdmins;
+                totalModsEl.textContent = totalMods;
+
+                // 🔎 Pesquisa dinâmica
+                document.getElementById("searchUser")
+                    .addEventListener("input", function () {
+                        const value = this.value.toLowerCase();
+                        document.querySelectorAll("#adminTable tbody tr")
+                            .forEach(row => {
+                                row.style.display =
+                                    row.innerText.toLowerCase().includes(value)
+                                        ? ""
+                                        : "none";
+                            });
+                    });
 
             } catch (e) {
                 console.error(e);
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">Erro ao carregar admins.</td></tr>`;
             }
         }
         import {
