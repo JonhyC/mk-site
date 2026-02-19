@@ -73,56 +73,135 @@
         }
 
         /* ======================== SIDEBAR USER ======================== */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            /* ocupa toda a altura da tela */
+            padding: 20px;
+            background-color: #111;
+            width: 260px;
+            /* exemplo escuro */
+            box-sizing: border-box;
+        }
+
+        /* Botões do menu ocupam espaço natural, mas empurram o usuário para baixo */
+        .sidebar>button {
+            background: none;
+            border: none;
+            color: #eee;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar>button:hover,
+        .sidebar>button.active {
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+
+        /* O box do usuário fica grudado embaixo */
         .sidebar-user {
             margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #222;
+            /* empurra pra baixo */
+            padding-top: 15px;
+            border-top: 1px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: #eee;
+            gap: 10px;
         }
 
+        /* user-info alinhado à esquerda */
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
+        /* Imagem do usuário */
         .user-info img {
-            width: 42px;
-            height: 42px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #ff0000;
+            border: 2px solid #ff4d4d;
+            box-shadow: 0 0 8px #ff4d4d;
         }
 
-        .user-text strong {
-            font-size: 14px;
-            display: block;
+        /* Texto com nome e id lado a lado */
+        .user-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
         }
 
-        .user-text span {
-            font-size: 12px;
+        .user-text>div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #eee;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ID estilo */
+        #userIdSidebar {
+            font-size: 0.9em;
             color: #aaa;
+            user-select: text;
         }
 
+        /* Cargo do usuário embaixo, com estilo de badge */
+        #userCargoSidebar {
+            font-size: 0.85em;
+            margin-top: 4px;
+            background-color: #2c2c2c;
+            color: #ffc107;
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Botões de ação do usuário (configurações e logout) */
         .user-actions {
             display: flex;
             gap: 8px;
         }
 
         .user-actions button {
-            background: #1a1a1a;
+            background: none;
             border: none;
-            color: white;
-            padding: 8px;
-            border-radius: 8px;
+            color: #eee;
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: 0.3s;
+            padding: 5px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
         }
 
         .user-actions button:hover {
-            background: #ff0000;
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+
+        /* Logo no topo da sidebar */
+        .sidebar>img.logo {
+            width: 120px;
+            margin-bottom: 20px;
+            user-select: none;
         }
 
         /* ======================== MAIN CONTENT ======================== */
@@ -345,9 +424,9 @@
             transition: 0.3s;
         }
 
-        .admin-sidebar li:hover,
-        .admin-sidebar .active {
-            background: #ff4d4d;
+        .admin-sidebar li.active {
+            background: linear-gradient(90deg, #ff4d4d, #ff1a1a);
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
         }
 
         /* CONTENT */
@@ -761,6 +840,153 @@
                 gap: 15px;
             }
         }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .admin-header h1 {
+            font-size: 28px;
+            color: #ff4d4d;
+        }
+
+        .admin-header button.primary {
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* EVENTOS */
+        /* Modal de criação de evento */
+        .form-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .form-modal-content {
+            background: #1e1e2f;
+            padding: 25px;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-modal-content h2 {
+            margin-bottom: 10px;
+            color: #ff4d4d;
+        }
+
+        .form-modal-content input,
+        .form-modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #111;
+            color: #fff;
+            resize: none;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .eventos-section {
+            margin-bottom: 30px;
+        }
+
+        .eventos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .evento-card {
+            background: #1e1e2f;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.25s ease;
+            overflow: hidden;
+            /* importante */
+        }
+
+        .evento-card:hover {
+            background: #151520;
+            transform: translateY(-4px);
+        }
+
+        /* IMAGEM QUADRADA */
+        .evento-img {
+            width: 20%;
+            aspect-ratio: 1 / 1;
+            /* 🔥 deixa sempre quadrado */
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        /* Título */
+        .evento-card h3 {
+            color: #ff4d4d;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        /* Descrição */
+        .evento-card p {
+            color: #ccc;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .card-actions button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card-actions .ativar-btn {
+            background: #3498db;
+            color: #fff;
+        }
+
+        .card-actions .terminar-btn {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .card-actions .apagar-btn {
+            background: #e74c3c;
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -768,18 +994,26 @@
     <div class="sidebar">
         <img src="logo.webp" class="logo" alt="Logo MK">
         <button id="btnDashboard"><i class="fa-solid fa-home"></i> Dashboard</button>
-        <button id="btnCriar"><i class="fa-solid fa-plus"></i> Adicionar Jogadores</button>
+        <button id="btnEventos"><i class="fa-solid fa-ticket"></i> Eventos</button>
         <button id="btnGerarChave"><i class="fa-solid fa-key"></i> Gerar Chave</button>
         <button id="btnVer"><i class="fa-solid fa-eye"></i> Ver Equipes</button>
         <button id="btnAdmin" style="display:none;"><i class="fa-solid fa-user-shield"></i> Painel
             Administração</button>
 
         <div class="sidebar-user" id="sidebarUserBox">
-            <div class="user-info">
-                <img id="userPhoto" src="https://i.imgur.com/4Z7Dz7S.png">
-                <div class="user-text">
-                    <strong id="userNomeSidebar">Carregando..</strong>
-                    <span id="userCargoSidebar">Carregando..</span>
+            <div class="user-info" style="display:flex; align-items:center; gap:10px;">
+                <img id="userPhoto" src="https://i.imgur.com/4Z7Dz7S.png"
+                    style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+
+                <div class="user-text" style="display:flex; flex-direction:column;">
+                    <!-- Linha do Nome + ID -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:180px;">
+                        <strong id="userNomeSidebar">Carregando..</strong>
+                        <span id="userIdSidebar" style="font-size:0.9em; color:#aaa;">Carregando..</span>
+                    </div>
+                    <!-- Cargo embaixo -->
+                    <span id="userCargoSidebar" class="badgeCargo badgeUser"
+                        style="font-size:0.85em; margin-top:2px;">Carregando..</span>
                 </div>
             </div>
 
@@ -799,7 +1033,7 @@
             from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        let currentUser = null, currentUserNome = null, currentUserRole = null;
+        let currentUser = null, currentUserNome = null, currentUserId = null, currentUserRole = null;
         let jogadores = [], grafico = null;
 
         // ---------------- FUNÇÕES AUXILIARES ----------------
@@ -831,16 +1065,16 @@
                 case "Dashboard":
                     ativarBotao("btnDashboard");
                     main.innerHTML = `
-                    <header class="dashboard-header">
+                    <header class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center; padding:15px 0;">
                         <div>
-                            <h2>
-                                Bem-vindo, <span id="adminNome">${currentUserNome}</span>
+                            <h2 style="margin:0; font-weight:500;">
+                                Bem-vindo, <span id="adminNome">${currentUserNome} (${currentUserId})</span>
                             </h2>
-                            <div class="user-role">
-                                <span class="badgeCargo ${cargoInfo.classe}">
-                                    ${cargoInfo.emoji} ${currentUserRole}
-                                </span>
-                            </div>
+                        </div>
+                        <div>
+                            <span class="badgeCargo ${cargoInfo.classe}" style="font-size:16px; padding:5px 10px;">
+                                ${cargoInfo.emoji} ${currentUserRole.toUpperCase()}
+                            </span>
                         </div>
                     </header>
 
@@ -880,51 +1114,25 @@
                     </section>
                 `;
 
-                    carregarDashboard();
+                    setTimeout(() => carregarDashboard(), 0);
                     break;
 
-                case "Criar":
-                    ativarBotao("btnCriar");
+                case "Eventos":
+                    ativarBotao("btnEventos");
 
                     main.innerHTML = `
-                    <div class="card">
-                        <h3 style="margin-bottom:20px;">➕ Criar Jogador</h3>
+                        <section class="eventos-section">
+                            <h3 class="section-title">
+                                <i class="fa-solid fa-bolt"></i> Eventos Ativos
+                            </h3>
 
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <input type="text" id="novoJogadorId" placeholder="ID do Jogador">
-                            <input type="text" id="novoJogadorNome" placeholder="Nome do Jogador">
-                            <button class="primary" id="btnSalvarJogador">
-                                <i class="fa-solid fa-user-plus"></i> Criar Jogador
-                            </button>
-                        </div>
-                    </div>
+                            <div id="eventosAtivosContainer" class="eventos-grid">
+                                <p>A carregar eventos...</p>
+                            </div>
+                        </section>
+                    `;
 
-                    <div class="card" style="margin-top:25px;">
-                        <h3 style="margin-bottom:20px;">👥 Jogadores Criados</h3>
-                        <div id="listaJogadores" class="players-grid"></div>
-                    </div>
-
-                    <div class="card" id="criarEquipeBox" style="margin-top:25px; display:none;">
-                        <h3 style="margin-bottom:15px;">⚔️ Criar Equipas</h3>
-
-                        <select id="limiteEquipe">
-                            <option value="2">2 Jogadores por Equipa</option>
-                            <option value="3">3 Jogadores por Equipa</option>
-                            <option value="4">4 Jogadores por Equipa</option>
-                            <option value="5">5 Jogadores por Equipa</option>
-                            <option value="6">6 Jogadores por Equipa</option>
-                        </select>
-
-                        <button class="primary" id="btnCriarEquipas" style="margin-top:10px;">
-                            <i class="fa-solid fa-people-group"></i> Criar Equipas RANDOM
-                        </button>
-                    </div>
-                `;
-
-                    document.getElementById("btnSalvarJogador").onclick = criarJogador;
-                    document.getElementById("btnCriarEquipas").onclick = criarEquipasRandom;
-
-                    carregarJogadoresDB();
+                    setTimeout(() => carregarEventosAtivos(), 0);
                     break;
 
                 case "Ver":
@@ -941,72 +1149,51 @@
 
                         <!-- SIDEBAR -->
                         <aside class="admin-sidebar">
-                            <h2>⚡ AdminPro</h2>
-                            <ul>
-                                <li class="active">Dashboard</li>
-                                <li>Utilizadores</li>
-                                <li>Configurações</li>
+                            <h2 class="admin-brand">
+                                <img src="logo.webp" alt="Logo MK"
+                                    style="
+                                        height:42px;
+                                        width:auto;
+                                        margin-right:12px;
+                                        border-radius:12px;
+                                        padding:6px;
+                                        background:linear-gradient(135deg,#ff4d4d,#ff1a1a);
+                                        box-shadow:0 0 15px rgba(255,77,77,0.6);
+                                        transition:0.3s ease;
+                                    "
+                                    onmouseover="this.style.transform='scale(1.08)'"
+                                    onmouseout="this.style.transform='scale(1)'"
+                                >
+                                <span style="
+                                    font-weight:600;
+                                    letter-spacing:1px;
+                                    background:linear-gradient(90deg,#ff4d4d,#ffffff);
+                                    -webkit-background-clip:text;
+                                    -webkit-text-fill-color:transparent;
+                                ">
+                                    MK Admin
+                                </span>
+                            </h2>
+                            <ul id="adminMenu">
+                                <li class="active" data-section="dashboard"><i class="fa-solid fa-home"></i> Dashboard</li>
+                                <li data-section="eventos"><i class="fa-solid fa-ticket"></i> Eventos</li>
+                                <li data-section="jogadores"><i class="fa-solid fa-user"></i> Jogadores</li>
+                                <li data-section="utilizadores"><i class="fa-solid fa-user-shield"></i> Utilizadores</li>
+                                <li data-section="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</li>
                             </ul>
                         </aside>
 
-                        <!-- MAIN CONTENT -->
                         <div class="admin-content">
-
-                            <!-- HEADER -->
-                            <div class="admin-header">
-                                <h1>Painel Administrativo</h1>
-                                <button class="primary" id="btnCriarUser">
-                                    <i class="fa-solid fa-user-plus"></i> Novo Utilizador
-                                </button>
-                            </div>
-
-                            <!-- STATS -->
-                            <div class="admin-stats">
-                                <div class="stat-card">
-                                    <h3 id="totalUsers">0</h3>
-                                    <p>Total Utilizadores</p>
-                                </div>
-
-                                <div class="stat-card">
-                                    <h3 id="totalAdmins">0</h3>
-                                    <p>Admins</p>
-                                </div>
-
-                                <div class="stat-card">
-                                    <h3 id="totalMods">0</h3>
-                                    <p>Moderadores</p>
-                                </div>
-                            </div>
-
-                            <!-- TABLE CARD -->
-                            <div class="admin-table-card">
-                                <div class="table-header">
-                                    <input type="text" id="searchUser" placeholder="🔍 Pesquisar utilizador...">
-                                </div>
-
-                                <div class="table-wrapper">
-                                    <table id="adminTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Utilizador</th>
-                                                <th>Email</th>
-                                                <th>Cargo</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
-                                </div>
-                            </div>
-
+                            <div id="adminDynamicContent"></div>
                         </div>
                     </div>
                     `;
 
-                    document.getElementById("btnCriarUser")
-                        .addEventListener("click", () => criarOuEditarUser());
+                    // Inicializar menu lateral APÓS renderizar o HTML
+                    configurarMenuAdmin();
 
-                    carregarAdminPanel();
+                    // Carregar sub-seção inicial do Admin
+                    carregarSecao("dashboard");
                     break;
 
                 case "GerarChave":
@@ -1031,11 +1218,17 @@
                 const jogadoresSnap = await getDocs(collection(db, "jogadores"));
                 const chavesSnap = await getDocs(collection(db, "chaves"));
 
-                document.getElementById("totalEquipas").innerText = equipasSnap.size;
-                document.getElementById("totalJogadores").innerText = jogadoresSnap.size;
-                document.getElementById("totalCampeonatos").innerText = chavesSnap.size;
+                const totalEquipasEl = document.getElementById("totalEquipas");
+                if (totalEquipasEl) totalEquipasEl.innerText = equipasSnap.size;
+
+                const totalJogadoresEl = document.getElementById("totalJogadores");
+                if (totalJogadoresEl) totalJogadoresEl.innerText = jogadoresSnap.size;
+
+                const totalCampeonatosEl = document.getElementById("totalCampeonatos");
+                if (totalCampeonatosEl) totalCampeonatosEl.innerText = chavesSnap.size;
 
                 const container = document.getElementById("campeonatosContainer");
+                if (!container) return;
                 container.innerHTML = "";
 
                 if (chavesSnap.empty) {
@@ -1050,7 +1243,6 @@
 
                 chavesSnap.forEach(docSnap => {
                     const data = docSnap.data();
-
                     const card = document.createElement("div");
                     card.classList.add("championship-card");
 
@@ -1074,15 +1266,80 @@
                         </div>
                     `;
 
-                    card.querySelector("button").onclick = () => {
-                        window.location.href = `campeonato.html?chave=${data.chave}`;
-                    };
+                    const btn = card.querySelector("button");
+                    if (btn) btn.onclick = () => window.location.href = `campeonato.html?chave=${data.chave}`;
 
                     container.appendChild(card);
                 });
 
             } catch (e) {
-                console.error(e);
+                console.error("Erro ao carregar dashboard:", e);
+            }
+        }
+
+        // ------------------
+        // Carregar Eventos Ativos
+        // ------------------
+        // ------------------
+        // Carregar Eventos Ativos
+        // ------------------
+
+        async function carregarEventosAtivos() {
+            const container = document.getElementById("eventosAtivosContainer");
+            container.innerHTML = "";
+
+            try {
+                const snapshot = await getDocs(collection(db, "eventosAtivos"));
+
+                if (snapshot.empty) {
+                    container.innerHTML = "<p>Nenhum evento ativo no momento.</p>";
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+
+                    const card = document.createElement("div");
+                    card.classList.add("evento-card");
+
+                    card.innerHTML = `
+                <h4>${data.nome || "Evento Sem Nome"}</h4>
+                <p><strong>Descrição:</strong> ${data.descricao || "Sem descrição"}</p>
+                <p><strong>Data:</strong> ${data.data || "Sem data"}</p>
+                <button class="terminar-btn" data-id="${id}">
+                    <i class="fa-solid fa-stop"></i> Terminar Evento
+                </button>
+            `;
+
+                    container.appendChild(card);
+                });
+
+                // Ativar botões terminar
+                container.querySelectorAll(".terminar-btn").forEach(btn => {
+                    btn.addEventListener("click", async e => {
+                        const id = e.currentTarget.dataset.id;
+
+                        const eventoDoc = doc(db, "eventosAtivos", id);
+                        const eventoSnap = await getDoc(eventoDoc);
+
+                        if (eventoSnap.exists()) {
+                            const data = eventoSnap.data();
+
+                            // Move para eventosDisponiveis
+                            await setDoc(doc(db, "eventosDisponiveis", id), data);
+
+                            // Remove de ativos
+                            await deleteDoc(eventoDoc);
+
+                            carregarEventosAtivos();
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error("Erro ao carregar eventos:", error);
+                container.innerHTML = "<p>Erro ao carregar eventos.</p>";
             }
         }
 
@@ -1509,12 +1766,693 @@
 
         // ---------------- IMPORTS FIRESTORE ----------------
 
-        // ----- PAINEL ADMIN -----
+        /* =====================================================
+        🔥 ADMIN DASHBOARD COMPLETO - MK ADMIN
+        ===================================================== */
+
+
+        /* =====================================================
+           🚀 INICIALIZAÇÃO
+        ===================================================== */
+
+        document.addEventListener("DOMContentLoaded", () => {
+            configurarMenuAdmin();
+            carregarSecao("dashboard");
+        });
+
+
+        /* =====================================================
+           📂 MENU LATERAL (SPA)
+        ===================================================== */
+
+        function configurarMenuAdmin() {
+
+            const items = document.querySelectorAll("#adminMenu li");
+
+            items.forEach(item => {
+
+                item.addEventListener("click", () => {
+
+                    items.forEach(i => i.classList.remove("active"));
+                    item.classList.add("active");
+
+                    const secao = item.getAttribute("data-section");
+                    carregarSecao(secao);
+                });
+
+            });
+        }
+
+
+        /* =====================================================
+           📄 CARREGAR SECÇÕES
+        ===================================================== */
+
+        function carregarSecao(secao) {
+            const container = document.getElementById("adminDynamicContent");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            switch (secao) {
+                case "dashboard":
+                    renderDashboard(container);
+                    break;
+                case "eventos":
+                    renderEventos(container);
+                    break;
+                // outras seções...
+                case "utilizadores":
+                    renderUtilizadores(container);
+                    break;
+                case "jogadores":
+                    renderJogadores(container);
+                    break;
+                case "configuracoes":
+                    renderConfiguracoes(container);
+                    break;
+            }
+        }
+
+        // =====================================
+        // EVENTO
+        // =====================================
+        async function renderEventos(container) {
+            try {
+                console.log("🔹 renderEventos iniciado");
+
+                // ===== PEGAR EVENTOS DO FIRESTORE =====
+                const eventosDisponiveisSnap = await getDocs(collection(db, "eventosDisponiveis"));
+                const eventosAtivosSnap = await getDocs(collection(db, "eventosAtivos"));
+
+                const eventosDisponiveis = eventosDisponiveisSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const eventosAtivos = eventosAtivosSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                console.log("📄 Eventos Disponíveis:", eventosDisponiveis);
+                console.log("📄 Eventos Ativos:", eventosAtivos);
+
+                // ===== PEGAR CARGO DO USUÁRIO =====
+                const user = auth.currentUser;
+                let userCargo = "user"; // padrão
+                if (user) {
+                    const snap = await getDocs(collection(db, "admins"));
+                    let userData = null;
+                    snap.forEach(docSnap => {
+                        if (docSnap.data().email === user.email) {
+                            userData = docSnap.data();
+                            console.log("🟢 Usuário encontrado na collection 'admins':", userData);
+                        }
+                    });
+
+                    if (userData) {
+                        userCargo = userData.cargo || "user";
+                    } else {
+                        console.warn("⚠ Usuário não encontrado na collection 'admins'");
+                    }
+                }
+
+                const cargo = userCargo.toLowerCase();
+                console.log("🔹 Cargo minúsculo:", cargo);
+
+                // ===== RENDER HTML =====
+                container.innerHTML = `
+                <div class="admin-header">
+                    <h1>Gerir Eventos</h1>
+                    <div id="btnContainer"></div>
+                </div>
+
+                <!-- FORM MODAL COMPLETO PARA EVENTOS -->
+                <div id="formEventoModal" class="form-modal" style="display:none;">
+                    <div class="form-modal-content">
+                        <h2>Criar Novo Evento</h2>
+
+                        <form id="formNovoEvento" class="form-novo-evento">
+
+                            <!-- Nome do Evento -->
+                            <div class="form-group">
+                                <label for="eventoNome">🎉 Evento <span style="color:red;">*</span></label>
+                                <input type="text" id="eventoNome" placeholder="Digite o nome do evento" required>
+                            </div>
+
+                            <!-- Descrição / Tópico -->
+                            <div class="form-group">
+                                <label for="eventoDescricao">💬 Descrição do Evento</label>
+                                <textarea id="eventoDescricao" placeholder="Descreva o evento detalhadamente"></textarea>
+                            </div>
+
+                            <!-- Local do Evento -->
+                            <div class="form-group">
+                                <label for="eventoLocal">📍 Local</label>
+                                <select id="eventoLocal">
+                                    <option value="">-- Selecione o local --</option>
+                                    <optgroup label="-- Global --">
+                                        <option value="Global">Servidor</option>
+                                    </optgroup>
+                                    <optgroup label="-- Favelas --">
+                                        <option value="Nova Holanda">Nova Holanda</option>
+                                        <option value="Helipa">Helipa</option>
+                                        <option value="Cidade de Deus">Cidade de Deus</option>
+                                        <option value="Alemão">Alemão</option>
+                                        <option value="Antares">Antares</option>
+                                        <option value="Dende">Dende</option>
+                                        <option value="Salgueiro">Salgueiro</option>
+                                        <option value="Israel">Israel</option>
+                                        <option value="Penha">Penha</option>
+                                        <option value="Rocinha">Rocinha</option>
+                                        <option value="Rodo">Rodo</option>
+                                        <option value="Bairro 13">Bairro 13</option>
+                                    </optgroup>
+                                    <optgroup label="-- Locais --">
+                                        <option value="Prédio">Prédio</option>
+                                        <option value="Fazenda">Fazenda</option>
+                                        <option value="Porta Aviões">Porta Aviões</option>
+                                        <option value="IATE">IATE</option>
+                                        <option value="FortZancudo">Fort Zancudo</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Importante -->
+                            <div class="form-group">
+                                <label for="eventoImportante">❗Importante</label>
+                                <textarea id="eventoImportante" placeholder="Informações importantes do evento"></textarea>
+                            </div>
+
+                            <!-- Regras -->
+                            <div class="form-group">
+                                <label for="eventoRegras">📖 Regras</label>
+                                <textarea id="eventoRegras" placeholder="Liste as regras do evento, separadas por linha"></textarea>
+                            </div>
+
+                            <!-- Recompensa -->
+                            <div class="form-group">
+                                <label for="eventoRecompensa">💰 Recompensa</label>
+                                <textarea id="eventoRecompensa" placeholder="Descreva as recompensas do evento"></textarea>
+                            </div>
+
+                            <!-- Inicio -->
+                            <div class="form-group">
+                                <label for="eventoInicio">⏰ Início</label>
+                                <input type="time" id="eventoInicio" placeholder="Hora do início">
+                            </div>
+
+                            <!-- Upload de Imagem -->
+                            <div class="form-group">
+                                <label for="eventoImagem">Imagem do Evento</label>
+                                <input type="file" id="eventoImagem" accept="image/*">
+                                <small>Dica: A imagem será exibida no card do evento.</small>
+                            </div>
+
+                            <!-- Botões -->
+                            <div class="form-buttons">
+                                <button type="submit" id="btnSalvarEvento" class="primary">Salvar Evento</button>
+                                <button type="button" id="btnCancelarEvento" class="delete-btn">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <section class="eventos-section">
+                    <h2>Eventos Disponíveis</h2>
+                    <div class="eventos-grid" id="eventosDisponiveisContainer">
+                        ${eventosDisponiveis.length === 0 ? `<p>Nenhum evento disponível.</p>` : eventosDisponiveis.map(evento => `
+                            <div class="evento-card">
+                                <h3>${evento.nome}</h3>
+                                <p>${evento.descricao}</p>
+                                ${evento.imagem ? `<img src="${evento.imagem}" alt="${evento.nome}" class="evento-img">` : ""}
+                                <div class="card-actions">
+                                    <button class="ativar-btn" data-id="${evento.id}">Ativar Evento</button>
+                                    <button class="apagar-btn" data-id="${evento.id}"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </section>
+
+                <section class="eventos-section">
+                    <h2>Eventos Ativos</h2>
+                    <div class="eventos-grid" id="eventosAtivosContainer">
+                        ${eventosAtivos.length === 0 ? `<p>Nenhum evento ativo.</p>` : eventosAtivos.map(evento => `
+                            <div class="evento-card active">
+                                ${evento.imagem ? `<img src="${evento.imagem}" alt="${evento.nome}" class="evento-img">` : ""}
+                                <h3>${evento.nome}</h3>
+                                <p>${evento.descricao}</p>
+                                <div class="card-actions">
+                                    <button class="terminar-btn" data-id="${evento.id}">Terminar Evento</button>
+                                    <button class="apagar-btn" data-id="${evento.id}"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </section>
+                `;
+
+                console.log("✅ HTML renderizado");
+
+                // ===== CRIAR BOTÃO PARA CEO =====
+                if (cargo === "ceo") {
+                    console.log("🎯 Usuário é CEO - criando botão");
+
+                    const btnContainer = container.querySelector("#btnContainer");
+                    const btnCriar = document.createElement("button");
+                    btnCriar.id = "btnCriarEvento";
+                    btnCriar.className = "primary";
+                    btnCriar.textContent = "Criar Evento";
+                    btnContainer.appendChild(btnCriar);
+
+                    console.log("🔹 Botão criado e adicionado ao container:", btnCriar);
+
+                    const modal = container.querySelector("#formEventoModal");
+                    const btnCancelar = container.querySelector("#btnCancelarEvento");
+                    const btnSalvar = container.querySelector("#btnSalvarEvento");
+                    const inputImagem = container.querySelector("#eventoImagem");
+
+                    btnCriar.addEventListener("click", () => {
+                        console.log("🖱 Botão 'Criar Evento' clicado");
+                        modal.style.display = "flex";
+                    });
+
+                    btnCancelar.addEventListener("click", () => {
+                        console.log("❌ Cancelar modal");
+                        modal.style.display = "none";
+                    });
+
+                    // ===== BOTÃO CRIAR EVENTO =====
+                    btnSalvar.addEventListener("click", async (e) => {
+                        e.preventDefault();
+
+                        const nome = container.querySelector("#eventoNome").value.trim();
+                        const descricao = container.querySelector("#eventoDescricao").value.trim();
+                        const local = container.querySelector("#eventoLocal").value;
+                        const importante = container.querySelector("#eventoImportante").value;
+                        const regras = container.querySelector("#eventoRegras").value;
+                        const recompensa = container.querySelector("#eventoRecompensa").value;
+                        const inicio = container.querySelector("#eventoInicio").value;
+                        const inputImagem = container.querySelector("#eventoImagem");
+
+                        if (!nome) return Swal.fire("Erro", "O nome do evento é obrigatório!", "error");
+
+                        let imagemBase64 = "";
+
+                        if (inputImagem.files[0]) {
+                            try {
+                                imagemBase64 = await resizeImage(inputImagem.files[0], 500, 0.7);
+                                console.log("✅ Imagem redimensionada e comprimida:", imagemBase64.length, "bytes");
+                            } catch (err) {
+                                console.error("Erro ao processar imagem:", err);
+                                Swal.fire("Erro", "Não foi possível processar a imagem.", "error");
+                                return;
+                            }
+                        }
+
+                        try {
+                            await addDoc(collection(db, "eventosDisponiveis"), {
+                                nome,
+                                descricao,
+                                local,
+                                importante,
+                                regras,
+                                recompensa,
+                                inicio,
+                                imagem: imagemBase64
+                            });
+                            console.log("✅ Evento salvo no Firestore");
+                            modal.style.display = "none";
+                            renderEventos(container);
+                        } catch (err) {
+                            console.error("Erro ao salvar evento:", err);
+                            Swal.fire("Erro", "Não foi possível salvar o evento.", "error");
+                        }
+                    });
+                }
+
+                function resizeImage(file, maxWidth = 500, quality = 0.7) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                const canvas = document.createElement("canvas");
+                                const scale = maxWidth / img.width;
+                                canvas.width = maxWidth;
+                                canvas.height = img.height * scale;
+
+                                const ctx = canvas.getContext("2d");
+                                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                                // converter para Base64 comprimido
+                                const dataUrl = canvas.toDataURL("image/webp", quality);
+                                resolve(dataUrl);
+                            };
+                            img.onerror = (err) => reject(err);
+                            img.src = event.target.result;
+                        };
+                        reader.onerror = (err) => reject(err);
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                // ===== BOTÕES ATIVAR EVENTO =====
+                container.querySelectorAll(".ativar-btn").forEach(btn => {
+                    btn.addEventListener("click", async e => {
+                        const id = e.currentTarget.dataset.id;
+                        console.log("▶ Ativar evento:", id);
+
+                        const eventoDoc = doc(db, "eventosDisponiveis", id);
+                        const eventoSnap = await getDoc(eventoDoc);
+
+                        if (eventoSnap.exists()) {
+                            const data = eventoSnap.data();
+
+                            // Envia para eventosAtivos
+                            await setDoc(doc(db, "eventosAtivos", id), data);
+
+                            // Remove de eventosDisponiveis
+                            await deleteDoc(eventoDoc);
+
+                            renderEventos(container);
+                        }
+                    });
+                });
+
+
+                // ===== BOTÕES TERMINAR EVENTO =====
+                container.querySelectorAll(".terminar-btn").forEach(btn => {
+                    btn.addEventListener("click", async e => {
+                        const id = e.currentTarget.dataset.id;
+                        console.log("⏹ Terminar evento:", id);
+
+                        const eventoDoc = doc(db, "eventosAtivos", id);
+                        const eventoSnap = await getDoc(eventoDoc);
+
+                        if (eventoSnap.exists()) {
+                            const data = eventoSnap.data();
+
+                            // Envia de volta para eventosDisponiveis
+                            await setDoc(doc(db, "eventosDisponiveis", id), data);
+
+                            // Remove de eventosAtivos
+                            await deleteDoc(eventoDoc);
+
+                            renderEventos(container);
+                        }
+                    });
+                });
+
+                // ===== BOTÕES APAGAR EVENTO =====
+                container.querySelectorAll(".apagar-btn").forEach(btn => {
+                    btn.addEventListener("click", e => {
+                        const id = e.currentTarget.dataset.id;
+                        console.log("🗑 Apagar evento:", id);
+                        Swal.fire({
+                            title: "Tem a certeza?",
+                            text: "Esta ação irá apagar o evento permanentemente!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#ff4d4d",
+                            cancelButtonColor: "#3085d6",
+                            confirmButtonText: "Sim, apagar!",
+                            cancelButtonText: "Cancelar"
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                await deleteDoc(doc(db, "eventosDisponiveis", id)).catch(() => { });
+                                await deleteDoc(doc(db, "eventosAtivos", id)).catch(() => { });
+                                renderEventos(container);
+                            }
+                        });
+                    });
+                });
+
+                console.log("🔹 renderEventos finalizado");
+
+            } catch (err) {
+                console.error("Erro ao carregar eventos:", err);
+                container.innerHTML = "<p>Erro ao carregar eventos.</p>";
+            }
+        }
+
+
+        /* =====================================================
+           📊 DASHBOARD
+        ===================================================== */
+
+        function renderDashboard(container) {
+
+            container.innerHTML = `
+            <div class="admin-header">
+                <h1>Dashboard Geral</h1>
+            </div>
+
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total Utilizadores</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalAdmins">0</h3>
+                    <p>Admins</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalMods">0</h3>
+                    <p>Moderadores</p>
+                </div>
+            </div>
+        `;
+
+            carregarDashboardStats();
+        }
+
+        async function carregarDashboardStats() {
+            try {
+                const snap = await getDocs(collection(db, "admins"));
+
+                const totalUsers = snap.size;
+                let totalAdmins = 0;
+                let totalMods = 0;
+
+                snap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    if (d.cargo === "admin") totalAdmins++;
+                    if (d.cargo === "moderador") totalMods++;
+                });
+
+                document.getElementById("totalUsers").textContent = totalUsers;
+                document.getElementById("totalAdmins").textContent = totalAdmins;
+                document.getElementById("totalMods").textContent = totalMods;
+
+            } catch (e) {
+                console.error("Erro ao carregar estatísticas do dashboard:", e);
+            }
+        }
+
+        /* =====================================================
+           👤 UTILIZADORES
+        ===================================================== */
+
+        function renderUtilizadores(container) {
+
+            container.innerHTML = `
+                <div class="admin-header">
+                    <h1>Gestão de Utilizadores</h1>
+                    <button class="primary" id="btnNovoUser">+ Novo Utilizador</button>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="table-header">
+                        <input type="text" id="searchUser" placeholder="🔍 Pesquisar utilizador...">
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table id="adminTable">
+                            <thead>
+                                <tr>
+                                    <th>Utilizador</th>
+                                    <th>Email</th>
+                                    <th>Cargo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("btnNovoUser")
+                .addEventListener("click", () => criarOuEditarUser());
+
+            carregarAdminPanel();
+        }
+
+
+        /* =====================================================
+   🎮 JOGADORES - CRUD COMPLETO
+===================================================== */
+
+        async function carregarJogadores() {
+            const container = document.getElementById("listaJogadores");
+            if (!container) return;
+
+            container.innerHTML = ""; // limpa lista
+            try {
+                const snap = await getDocs(collection(db, "jogadores"));
+
+                if (snap.empty) {
+                    container.innerHTML = `<p style="text-align:center; color:#888;">Nenhum jogador registado.</p>`;
+                    return;
+                }
+
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const tr = document.createElement("div");
+                    tr.classList.add("player-card");
+                    tr.innerHTML = `
+                        <div>
+                            <strong>ID:</strong> ${data.id || "-"}<br>
+                            <strong>Nome:</strong> ${data.nome || "-"}
+                        </div>
+                        <div class="player-actions">
+                            <button class="edit-btn"><i class="fa-solid fa-pen"></i> Editar</button>
+                            <button class="delete-btn"><i class="fa-solid fa-trash"></i> Deletar</button>
+                        </div>
+                    `;
+                    container.appendChild(tr);
+
+                    // Editar jogador
+                    tr.querySelector(".edit-btn").addEventListener("click", () => criarOuEditarJogador(docSnap.id));
+
+                    // Deletar jogador
+                    tr.querySelector(".delete-btn").addEventListener("click", () => deletarJogador(docSnap.id));
+                });
+
+            } catch (e) {
+                console.error("Erro ao carregar jogadores:", e);
+                container.innerHTML = `<p style="color:red;">Erro ao carregar jogadores</p>`;
+            }
+        }
+
+        async function criarOuEditarJogador(docId = null) {
+            let jogadorData = { id: "", nome: "" };
+
+            if (docId) {
+                const snap = await getDoc(doc(db, "jogadores", docId));
+                if (snap.exists()) jogadorData = snap.data();
+            }
+
+            const { value: formValues } = await Swal.fire({
+                title: docId ? "Editar Jogador" : "Criar Jogador",
+                html: `
+                    <input id="swalJogadorID" class="swal2-input" placeholder="ID do Jogador" value="${jogadorData.id}">
+                    <input id="swalJogadorNome" class="swal2-input" placeholder="Nome do Jogador" value="${jogadorData.nome}">
+                `,
+                showCancelButton: true,
+                preConfirm: () => ({
+                    id: document.getElementById("swalJogadorID").value.trim(),
+                    nome: document.getElementById("swalJogadorNome").value.trim()
+                })
+            });
+
+            if (!formValues) return;
+
+            try {
+                if (!formValues.id || !formValues.nome) {
+                    Swal.fire({ icon: "error", title: "ID e Nome são obrigatórios!" });
+                    return;
+                }
+
+                if (docId) {
+                    // Atualizar jogador existente
+                    await updateDoc(doc(db, "jogadores", docId), formValues);
+                    Swal.fire({ icon: "success", title: "Jogador atualizado!" });
+                } else {
+                    // Criar novo jogador
+                    await addDoc(collection(db, "jogadores"), formValues);
+                    Swal.fire({ icon: "success", title: "Jogador criado!" });
+                }
+
+                carregarJogadores();
+            } catch (e) {
+                console.error("Erro ao salvar jogador:", e);
+                Swal.fire({ icon: "error", title: "Erro ao salvar jogador" });
+            }
+        }
+
+        async function deletarJogador(docId) {
+            const result = await Swal.fire({
+                icon: "warning",
+                title: "Tem certeza?",
+                text: "Esta ação não pode ser desfeita!",
+                showCancelButton: true,
+                confirmButtonText: "Sim, deletar",
+                cancelButtonText: "Cancelar"
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                await deleteDoc(doc(db, "jogadores", docId));
+                Swal.fire({ icon: "success", title: "Jogador deletado!", timer: 1200, showConfirmButton: false });
+                carregarJogadores();
+            } catch (e) {
+                console.error("Erro ao deletar jogador:", e);
+                Swal.fire({ icon: "error", title: "Erro ao deletar jogador" });
+            }
+        }
+
+        /* =====================================================
+           Função principal de renderização da seção Jogadores
+        ===================================================== */
+        function renderJogadores(container) {
+            container.innerHTML = `
+                <div class="admin-header">
+                    <h1>Gestão de Jogadores</h1>
+                    <button class="primary" id="btnNovoJogador">+ Novo Jogador</button>
+                </div>
+
+                <div class="admin-table-card" style="margin-top:15px;">
+                    <div id="listaJogadores" class="players-grid">
+                        <p style="text-align:center; color:#888;">Carregando jogadores...</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("btnNovoJogador").addEventListener("click", () => criarOuEditarJogador());
+
+            carregarJogadores();
+        }
+
+
+        /* =====================================================
+           ⚙️ CONFIGURAÇÕES
+        ===================================================== */
+
+        function renderConfiguracoes(container) {
+
+            container.innerHTML = `
+        <div class="admin-header">
+            <h1>Configurações</h1>
+        </div>
+
+        <div class="admin-table-card">
+            <p>Configurações do sistema ⚙️</p>
+        </div>
+    `;
+        }
+
+
+        /* =====================================================
+           📋 CARREGAR ADMIN PANEL (TABELA + STATS)
+        ===================================================== */
+
         async function carregarAdminPanel() {
+
             const tbody = document.querySelector("#adminTable tbody");
+            if (!tbody) return;
+
             const totalUsersEl = document.getElementById("totalUsers");
             const totalAdminsEl = document.getElementById("totalAdmins");
             const totalModsEl = document.getElementById("totalMods");
+            const searchInput = document.getElementById("searchUser");
 
             tbody.innerHTML = "";
 
@@ -1523,19 +2461,11 @@
             let totalMods = 0;
 
             try {
+
                 const snap = await getDocs(collection(db, "admins"));
 
-                if (snap.empty) {
-                    tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" style="text-align:center;padding:20px;">
-                        Nenhum utilizador encontrado.
-                    </td>
-                </tr>`;
-                    return;
-                }
-
                 snap.forEach(docSnap => {
+
                     const d = docSnap.data();
                     totalUsers++;
 
@@ -1547,13 +2477,15 @@
                     tr.innerHTML = `
                 <td>
                     <div class="user-cell">
-                        <img class="user-avatar" 
-                            src="${d.photoBase64 || 'https://via.placeholder.com/40'}">
-                        <span>${d.nome}</span>
+                        <img class="user-avatar"
+                            src="${d.photoBase64 && d.photoBase64.startsWith("data:")
+                            ? d.photoBase64
+                            : "https://via.placeholder.com/40"}">
+                        <span>${d.nome || "-"}</span>
                     </div>
                 </td>
-                <td>${d.email}</td>
-                <td>${d.cargo}</td>
+                <td>${d.email || "-"}</td>
+                <td>${d.cargo || "-"}</td>
                 <td>
                     <button class="action-btn edit-btn">Editar</button>
                     <button class="action-btn delete-btn">Eliminar</button>
@@ -1573,14 +2505,15 @@
                         .addEventListener("click", () => verUser(docSnap.id));
                 });
 
-                totalUsersEl.textContent = totalUsers;
-                totalAdminsEl.textContent = totalAdmins;
-                totalModsEl.textContent = totalMods;
+                if (totalUsersEl) totalUsersEl.textContent = totalUsers;
+                if (totalAdminsEl) totalAdminsEl.textContent = totalAdmins;
+                if (totalModsEl) totalModsEl.textContent = totalMods;
 
-                // 🔎 Pesquisa dinâmica
-                document.getElementById("searchUser")
-                    .addEventListener("input", function () {
+                if (searchInput) {
+                    searchInput.addEventListener("input", function () {
+
                         const value = this.value.toLowerCase();
+
                         document.querySelectorAll("#adminTable tbody tr")
                             .forEach(row => {
                                 row.style.display =
@@ -1589,171 +2522,129 @@
                                         : "none";
                             });
                     });
+                }
 
             } catch (e) {
-                console.error(e);
+                console.error("Erro ao carregar admins:", e);
             }
         }
-        import {
-            createUserWithEmailAndPassword, updatePassword, getAuth
-        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ----- CRIAR OU EDITAR USUÁRIO -----
+
+        /* =====================================================
+           ✏️ CRIAR / EDITAR UTILIZADOR
+        ===================================================== */
+
         async function criarOuEditarUser(docId = null) {
+
             let userData = { nome: "", email: "", cargo: "user", senha: "", photoBase64: "" };
 
             if (docId) {
-                // Pega dados do admin se estiver editando
-                const adminRef = doc(db, "admins", docId);
-                const snap = await getDoc(adminRef);
+                const snap = await getDoc(doc(db, "admins", docId));
                 if (snap.exists()) userData = snap.data();
             }
 
-            const html = `
-        <input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">
-        <input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">
-        <input id="swalSenha" type="password" class="swal2-input" placeholder="Senha (deixe vazio para não alterar)">
-        <select id="swalCargo" class="swal2-select">
-            <option value="ceo" ${userData.cargo.toLowerCase() === "ceo" ? "selected" : ""}>CEO</option>
-            <option value="admin" ${userData.cargo === "admin" ? "selected" : ""}>Admin</option>
-            <option value="moderador" ${userData.cargo === "moderador" ? "selected" : ""}>Moderador</option>
-            <option value="user" ${userData.cargo === "user" ? "selected" : ""}>Jogador</option>
-        </select>
-        <div style="margin-top:10px; text-align:center;">
-            <img id="swalPreview" src="${userData.photoBase64 || 'https://via.placeholder.com/100'}" 
-                style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:5px; border:2px solid #ff4d4d;">
-            <input id="swalPhoto" type="file" accept="image/*" style="margin-top:5px;">
-        </div>
-    `;
-
             const { value: formValues } = await Swal.fire({
-                title: docId ? "Editar Usuário" : "Criar Usuário",
-                html,
-                focusConfirm: false,
-                showCancelButton: true,
-                didOpen: () => {
-                    const photoInput = document.getElementById("swalPhoto");
-                    const preview = document.getElementById("swalPreview");
 
-                    photoInput.addEventListener("change", (e) => {
-                        const file = e.target.files[0];
-                        if (!file) return;
-                        const reader = new FileReader();
-                        reader.onload = () => preview.src = reader.result;
-                        reader.readAsDataURL(file);
-                    });
-                },
+                title: docId ? "Editar Usuário" : "Criar Usuário",
+
+                html: `
+            <input id="swalNome" class="swal2-input" placeholder="Nome" value="${userData.nome}">
+            <input id="swalEmail" class="swal2-input" placeholder="Email" value="${userData.email}">
+            <input id="swalSenha" type="password" class="swal2-input" placeholder="Senha (opcional)">
+            <select id="swalCargo" class="swal2-select">
+                <option value="ceo">CEO</option>
+                <option value="admin">Admin</option>
+                <option value="moderador">Moderador</option>
+                <option value="user">Jogador</option>
+            </select>
+        `,
+
+                showCancelButton: true,
+
                 preConfirm: () => ({
                     nome: document.getElementById("swalNome").value.trim(),
                     email: document.getElementById("swalEmail").value.trim(),
                     cargo: document.getElementById("swalCargo").value,
-                    senha: document.getElementById("swalSenha").value,
-                    photoBase64: document.getElementById("swalPreview").src
+                    senha: document.getElementById("swalSenha").value
                 })
             });
 
             if (!formValues) return;
 
             try {
+
                 if (docId) {
-                    // --- EDITAR ---
+
                     const dataToUpdate = { ...formValues };
-                    if (!dataToUpdate.senha) delete dataToUpdate.senha; // não sobrescreve senha vazia
+                    if (!dataToUpdate.senha) delete dataToUpdate.senha;
+
                     await updateDoc(doc(db, "admins", docId), dataToUpdate);
 
-                    // Atualiza senha no Firebase Auth se houver
-                    if (formValues.senha) {
-                        const authUser = await auth.getUserByEmail(formValues.email); // via Admin SDK (servidor)
-                        // updatePassword(authUser, formValues.senha); // só no servidor
-                    }
-
-                    Swal.fire({ icon: "success", title: "Usuário atualizado!" });
+                    Swal.fire({ icon: "success", title: "Atualizado!" });
 
                 } else {
-                    // --- CRIAR ---
+
                     if (!formValues.senha) {
-                        Swal.fire({ icon: "error", title: "É necessário definir uma senha!" });
+                        Swal.fire({ icon: "error", title: "Defina uma senha!" });
                         return;
                     }
 
-                    // 1️⃣ Cria no Firebase Auth
                     await createUserWithEmailAndPassword(auth, formValues.email, formValues.senha);
-
-                    // 2️⃣ Cria no Firestore
                     await addDoc(collection(db, "admins"), formValues);
 
-                    Swal.fire({ icon: "success", title: "Usuário criado!" });
+                    Swal.fire({ icon: "success", title: "Criado!" });
                 }
 
                 carregarAdminPanel();
 
             } catch (e) {
-                console.error("Erro ao salvar usuário:", e);
-                Swal.fire({ icon: "error", title: "Erro ao salvar usuário" });
+                console.error(e);
+                Swal.fire({ icon: "error", title: "Erro ao salvar" });
             }
         }
 
-        // ----- DELETAR USUÁRIO -----
+
+        /* =====================================================
+           🗑️ DELETAR
+        ===================================================== */
+
         async function deletarUser(docId) {
-            try {
-                const result = await Swal.fire({
-                    icon: "warning",
-                    title: "Tem certeza?",
-                    text: "Esta ação não pode ser desfeita!",
-                    showCancelButton: true,
-                    confirmButtonText: "Sim, deletar",
-                    cancelButtonText: "Cancelar",
-                    focusCancel: true
-                });
 
-                if (!result.isConfirmed) return;
+            const result = await Swal.fire({
+                icon: "warning",
+                title: "Tem certeza?",
+                showCancelButton: true
+            });
 
-                await deleteDoc(doc(db, "admins", docId));
+            if (!result.isConfirmed) return;
 
-                await Swal.fire({ icon: "success", title: "Usuário deletado!", timer: 1500, showConfirmButton: false });
-                carregarAdminPanel();
-            } catch (error) {
-                console.error(error);
-                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível deletar o usuário." });
-            }
+            await deleteDoc(doc(db, "admins", docId));
+
+            Swal.fire({ icon: "success", title: "Deletado!", timer: 1200, showConfirmButton: false });
+
+            carregarAdminPanel();
         }
 
-        // ----- VER DETALHES DO USUÁRIO -----
+
+        /* =====================================================
+           👁️ VER DETALHES
+        ===================================================== */
+
         async function verUser(docId) {
-            try {
-                const adminRef = doc(db, "admins", docId);
-                const snap = await getDoc(adminRef);
-                if (!snap.exists()) {
-                    Swal.fire({ icon: "error", title: "Usuário não encontrado" });
-                    return;
-                }
 
-                const data = snap.data();
+            const snap = await getDoc(doc(db, "admins", docId));
+            if (!snap.exists()) return;
 
-                Swal.fire({
-                    title: `Detalhes de ${data.nome || "Usuário"}`,
-                    html: `
-                <div style="text-align:center; margin-bottom:15px;">
-                    <img src="${data.photoBase64 || 'https://via.placeholder.com/80'}" 
-                         alt="Avatar" style="width:80px; height:80px; border-radius:50%; border:2px solid #ff4d4d; box-shadow:0 0 10px #ff4d4d;">
-                </div>
-                <p><strong>Nome:</strong> ${data.nome || "-"}</p>
-                <p><strong>Email:</strong> ${data.email || "-"}</p>
-                <p><strong>Cargo:</strong> ${data.cargo || "-"}</p>
-                <p><strong>Senha definida:</strong> ${data.senha ? "Sim" : "Não"}</p>
-            `,
-                    confirmButtonText: "Fechar",
-                    width: 350
-                });
+            const data = snap.data();
 
-            } catch (error) {
-                console.error(error);
-                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível carregar os detalhes do usuário." });
-            }
+            Swal.fire({
+                title: data.nome,
+                html: `
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Cargo:</strong> ${data.cargo}</p>
+        `
+            });
         }
-
-        // ----- INICIALIZAÇÃO -----
-        document.addEventListener("DOMContentLoaded", carregarAdminPanel);
 
         // ------------------
         // Configuração Botão
@@ -1764,18 +2655,18 @@
             const { value: formValues } = await Swal.fire({
                 title: "⚙️ Configurações",
                 html: `
-            <label style="display:block;text-align:left;margin-bottom:5px;">Nome:</label>
-            <input id="swalNomeUser" class="swal2-input" value="${currentUserNome}">
+                    <label style="display:block;text-align:left;margin-bottom:5px;">Nome:</label>
+                    <input id="swalNomeUser" class="swal2-input" value="${currentUserNome}">
 
-            <label style="display:block;text-align:left;margin:15px 0 5px;">Tema:</label>
-            <select id="swalTema" class="swal2-select">
-                <option value="dark" ${temaAtual === "dark" ? "selected" : ""}>🌙 Escuro</option>
-                <option value="light" ${temaAtual === "light" ? "selected" : ""}>☀️ Claro</option>
-            </select>
+                    <label style="display:block;text-align:left;margin:15px 0 5px;">Tema:</label>
+                    <select id="swalTema" class="swal2-select">
+                        <option value="dark" ${temaAtual === "dark" ? "selected" : ""}>🌙 Escuro</option>
+                        <option value="light" ${temaAtual === "light" ? "selected" : ""}>☀️ Claro</option>
+                    </select>
 
-            <label style="display:block;text-align:left;margin:15px 0 5px;">Foto de Perfil:</label>
-            <input type="file" id="swalFotoUser" class="swal2-file" accept="image/*">
-        `,
+                    <label style="display:block;text-align:left;margin:15px 0 5px;">Foto de Perfil:</label>
+                    <input type="file" id="swalFotoUser" class="swal2-file" accept="image/*">
+                `,
                 showCancelButton: true,
                 confirmButtonText: "Salvar Alterações",
                 preConfirm: () => ({
@@ -1871,11 +2762,15 @@
             const userPhoto = document.getElementById("userPhoto");
             const userPhotoMobile = document.getElementById("mobileUserPhoto")
             userPhoto.src = userData.photoBase64 || userData.photoURL || "https://i.imgur.com/4Z7Dz7S.png";
-            userPhotoMobile.src = userData.photoBase64 | userData.photoUrl;
+            userPhotoMobile.src = userData.photoBase64 || userData.photoUrl;
 
             // Nome
             const userNome = document.getElementById("userNomeSidebar");
             userNome.textContent = userData.nome || "Nome";
+
+            // ID
+            const userId = document.getElementById("userIdSidebar");
+            userId.textContent = userData.id || "Id"
 
             // Cargo
             const cargoSpan = document.getElementById("userCargoSidebar");
@@ -1903,17 +2798,19 @@
             }
         }
 
+        // ------------------------- AUTH ---------------------------
         onAuthStateChanged(auth, async user => {
             if (!user) { window.location.href = "login.html"; return; }
             currentUser = user;
 
             try {
+                // Buscar o admin correspondente ao usuário logado
                 const snap = await getDocs(collection(db, "admins"));
                 let userData = null;
                 snap.forEach(docSnap => {
                     if (docSnap.data().email === user.email) {
                         userData = docSnap.data();
-                        userData.docId = docSnap.id; // se precisar do id depois
+                        userData.docId = docSnap.id;
                     }
                 });
 
@@ -1923,21 +2820,25 @@
                     return;
                 }
 
+                // Cargo do usuário logado
+                const userCargo = (userData.cargo || "user").toLowerCase();
                 currentUserNome = userData.nome;
+                currentUserId = userData.id
                 currentUserRole = userData.cargo;
 
                 // Mostrar botão Admin só se CEO
-                if ((currentUserRole || "").toLowerCase() === "ceo") {
+                if (userCargo === "ceo") {
                     document.getElementById("btnAdmin").style.display = "flex";
                 }
 
-                // Atualiza sidebar com foto, nome e cargo
+                // Atualiza sidebar e tema...
                 await atualizarSidebar(userData);
-
-                // Carregar tema salvo
                 const temaSalvo = localStorage.getItem("temaMK");
                 if (temaSalvo === "light") document.body.classList.add("light");
 
+                // Carrega a seção eventos passando o cargo
+                // depois de definir currentUserRole
+                carregarSecao("eventos", currentUserRole);
                 mostrarSecao("Dashboard");
 
             } catch (e) {
@@ -1948,7 +2849,7 @@
 
         // ---------------- SIDEBAR ----------------
         document.getElementById("btnDashboard").onclick = () => mostrarSecao("Dashboard");
-        document.getElementById("btnCriar").onclick = () => mostrarSecao("Criar");
+        document.getElementById("btnEventos").onclick = () => mostrarSecao("Eventos");
         document.getElementById("btnVer").onclick = () => mostrarSecao("Ver");
         document.getElementById("btnGerarChave").onclick = () => mostrarSecao("GerarChave");
         document.getElementById("btnAdmin").onclick = () => mostrarSecao("Admin");
