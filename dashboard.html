@@ -101,7 +101,6 @@
 
         .sidebar>button:hover,
         .sidebar>button.active {
-            background-color: #ff4d4d;
             color: #fff;
         }
 
@@ -987,6 +986,90 @@
             background: #e74c3c;
             color: #fff;
         }
+
+        /* ----------------- EVENTOS VISÃO DO PLAYER ----------------- */
+        .evento-card-ativo:hover {
+            background: #151520;
+        }
+
+        /* IMAGEM */
+        .evento-img-ativo img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+
+        /* HEADER */
+        .evento-header-ativo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 18px 5px 18px;
+        }
+
+        .evento-header-ativo h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+
+        /* BADGE IMPORTANTE */
+        .badge-importante-ativo {
+            background: linear-gradient(135deg, #ff3b3b, #ff0000);
+            color: #fff;
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+        }
+
+
+        /* BODY */
+        .evento-body-ativo {
+            padding: 10px 18px 15px 18px;
+            font-size: 14px;
+            color: #d1d1e0;
+        }
+
+        .evento-body-ativo p {
+            margin: 6px 0;
+        }
+
+        .evento-body-ativo strong {
+            color: #ffffff;
+        }
+
+
+        /* FOOTER */
+        .evento-footer-ativo {
+            margin-top: auto;
+            padding: 15px 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .discord-btn {
+            background: #5865F2;
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.3s ease;
+        }
+
+        .discord-btn:hover {
+            background: #4752c4;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 
@@ -995,8 +1078,6 @@
         <img src="logo.webp" class="logo" alt="Logo MK">
         <button id="btnDashboard"><i class="fa-solid fa-home"></i> Dashboard</button>
         <button id="btnEventos"><i class="fa-solid fa-ticket"></i> Eventos</button>
-        <button id="btnGerarChave"><i class="fa-solid fa-key"></i> Gerar Chave</button>
-        <button id="btnVer"><i class="fa-solid fa-eye"></i> Ver Equipes</button>
         <button id="btnAdmin" style="display:none;"><i class="fa-solid fa-user-shield"></i> Painel
             Administração</button>
 
@@ -1029,8 +1110,10 @@
 
     <script type="module">
         import { db, auth } from "./firebase.js";
-        import { collection, getDocs, getDoc, addDoc, deleteDoc, doc, updateDoc, setDoc }
-            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import {
+            collection, getDocs, getDoc, addDoc, deleteDoc,
+            doc, updateDoc, setDoc, query, where
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         let currentUser = null, currentUserNome = null, currentUserId = null, currentUserRole = null;
@@ -1080,37 +1163,31 @@
 
                     <!-- Cards Estatísticas -->
                     <section class="stats-grid">
+
                         <div class="stat-card">
-                            <div class="stat-icon"><i class="fa-solid fa-people-group"></i></div>
+                            <div class="stat-icon"><i class="fa-solid fa-user-shield"></i></div>
                             <div>
-                                <h3 id="totalEquipas">0</h3>
-                                <p>Equipes Criadas</p>
+                                <h3 id="totalStaff">0</h3>
+                                <p>Total de Staff</p>
                             </div>
                         </div>
 
                         <div class="stat-card">
-                            <div class="stat-icon"><i class="fa-solid fa-user"></i></div>
+                            <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
                             <div>
-                                <h3 id="totalJogadores">0</h3>
-                                <p>Jogadores Registados</p>
+                                <h3 id="totalEventosAtivos">0</h3>
+                                <p>Eventos Ativos</p>
                             </div>
                         </div>
 
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
-                            <div>
-                                <h3 id="totalCampeonatos">0</h3>
-                                <p>Campeonatos Ativos</p>
-                            </div>
-                        </div>
                     </section>
 
-                    <!-- Campeonatos Ativos -->
-                    <section class="championship-section">
+                    <!-- Eventos Ativos -->
+                    <section class="eventos-section">
                         <h3 class="section-title">
-                            <i class="fa-solid fa-fire"></i> Campeonatos Ativos
+                            <i class="fa-solid fa-bolt"></i> Eventos Ativos
                         </h3>
-                        <div id="campeonatosContainer" class="championship-grid"></div>
+                        <div id="eventosContainer" class="eventos-grid"></div>
                     </section>
                 `;
 
@@ -1133,12 +1210,6 @@
                     `;
 
                     setTimeout(() => carregarEventosAtivos(), 0);
-                    break;
-
-                case "Ver":
-                    ativarBotao("btnVer");
-                    main.innerHTML = `<div class="card"><h3>👀 Equipas Criadas</h3><div id="equipasContainer"></div></div>`;
-                    carregarEquipas();
                     break;
 
                 case "Admin":
@@ -1195,79 +1266,88 @@
                     // Carregar sub-seção inicial do Admin
                     carregarSecao("dashboard");
                     break;
-
-                case "GerarChave":
-                    ativarBotao("btnGerarChave");
-                    main.innerHTML = `
-                    <div class="card">
-                        <h3>🔑 Gerar Chaves para Campeonato</h3>
-                        <button class="primary" id="btnGerarNovaChave"><i class="fa-solid fa-key"></i> Gerar Nova Chave</button>
-                        <div id="chavesContainer" style="margin-top:20px; display:flex; flex-wrap:wrap; gap:15px;"></div>
-                    </div>`;
-
-                    document.getElementById("btnGerarNovaChave").onclick = gerarChave;
-                    carregarChaves();
-                    break;
             }
         }
 
         // ---------------- DASHBOARD ----------------
         async function carregarDashboard() {
             try {
-                const equipasSnap = await getDocs(collection(db, "equipas"));
-                const jogadoresSnap = await getDocs(collection(db, "jogadores"));
-                const chavesSnap = await getDocs(collection(db, "chaves"));
 
-                const totalEquipasEl = document.getElementById("totalEquipas");
-                if (totalEquipasEl) totalEquipasEl.innerText = equipasSnap.size;
+                // 🔹 Buscar apenas Staff (ceo, admin, moderador)
+                const staffQuery = query(
+                    collection(db, "admins"), // ou "users" se for essa a coleção
+                    where("cargo", "in", ["ceo", "admin", "moderador"])
+                );
 
-                const totalJogadoresEl = document.getElementById("totalJogadores");
-                if (totalJogadoresEl) totalJogadoresEl.innerText = jogadoresSnap.size;
+                const staffSnap = await getDocs(staffQuery);
 
-                const totalCampeonatosEl = document.getElementById("totalCampeonatos");
-                if (totalCampeonatosEl) totalCampeonatosEl.innerText = chavesSnap.size;
+                const totalStaffEl = document.getElementById("totalStaff");
+                if (totalStaffEl) totalStaffEl.innerText = staffSnap.size;
 
-                const container = document.getElementById("campeonatosContainer");
+                // 🔹 Buscar Eventos Ativos
+                const eventosSnap = await getDocs(collection(db, "eventosAtivos"));
+
+                const totalEventosEl = document.getElementById("totalEventosAtivos");
+                if (totalEventosEl) totalEventosEl.innerText = eventosSnap.size;
+
+
+                // 🔹 Container da lista de eventos
+                const container = document.getElementById("eventosContainer");
                 if (!container) return;
+
                 container.innerHTML = "";
 
-                if (chavesSnap.empty) {
+                if (eventosSnap.empty) {
                     container.innerHTML = `
                 <div class="empty-state">
                     <i class="fa-solid fa-circle-info"></i>
-                    <p>Nenhum campeonato ativo no momento.</p>
+                    <p>Nenhum evento ativo no momento.</p>
                 </div>
             `;
                     return;
                 }
 
-                chavesSnap.forEach(docSnap => {
+                // 🔥 Criar cards dos eventos
+                eventosSnap.forEach(docSnap => {
                     const data = docSnap.data();
+                    const id = docSnap.id;
+
                     const card = document.createElement("div");
-                    card.classList.add("championship-card");
+                    card.classList.add("evento-card");
 
                     card.innerHTML = `
-                        <div class="championship-header">
-                            <i class="fa-solid fa-trophy"></i>
-                            <span>${data.chave}</span>
-                        </div>
+                <div class="evento-header">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>${data.nome || "Evento"}</span>
+                </div>
 
-                        <div class="championship-body">
-                            <small>Criado por: ${data.criadoPor || "Sistema"}</small><br>
-                            <small>Tipo: ${data.tipo || "-"}</small><br>
-                            <small>Local: ${data.local || "-"}</small><br>
-                            <small>Arma: ${data.arma || "-"}</small>
-                        </div>
+                <div class="evento-body">
+                    <small>Descrição: ${data.descricao || "-"}</small><br>
+                    <small>Início: ${data.inicio || "-"}</small>
+                </div>
+            `;
 
-                        <div class="championship-footer">
-                            <button class="primary">
-                                <i class="fa-solid fa-arrow-right"></i> Abrir
-                            </button>
-                        </div>
-                    `;
-
+                    // Botão terminar evento
                     const btn = card.querySelector("button");
-                    if (btn) btn.onclick = () => window.location.href = `campeonato.html?chave=${data.chave}`;
+                    if (btn) {
+                        btn.onclick = async () => {
+
+                            const eventoDoc = doc(db, "eventosAtivos", id);
+                            const eventoSnap = await getDoc(eventoDoc);
+
+                            if (eventoSnap.exists()) {
+                                const eventoData = eventoSnap.data();
+
+                                // Move para eventosDisponiveis
+                                await setDoc(doc(db, "eventosDisponiveis", id), eventoData);
+
+                                // Remove de ativos
+                                await deleteDoc(eventoDoc);
+
+                                carregarDashboard();
+                            }
+                        };
+                    }
 
                     container.appendChild(card);
                 });
@@ -1277,19 +1357,23 @@
             }
         }
 
-        // ------------------
-        // Carregar Eventos Ativos
-        // ------------------
-        // ------------------
-        // Carregar Eventos Ativos
-        // ------------------
+        let eventoSelecionadoId = null;
 
-        async function carregarEventosAtivos() {
+        // ------------------ Carregar Eventos Ativos ------------------
+        export async function carregarEventosAtivos() {
+            console.log("[DEBUG] Iniciando carregarEventosAtivos");
+
             const container = document.getElementById("eventosAtivosContainer");
+            if (!container) {
+                console.error("[DEBUG] Container de eventos não encontrado!");
+                return;
+            }
+
             container.innerHTML = "";
 
             try {
                 const snapshot = await getDocs(collection(db, "eventosAtivos"));
+                console.log("[DEBUG] Snapshot eventosAtivos obtido:", snapshot.size);
 
                 if (snapshot.empty) {
                     container.innerHTML = "<p>Nenhum evento ativo no momento.</p>";
@@ -1301,47 +1385,167 @@
                     const id = docSnap.id;
 
                     const card = document.createElement("div");
-                    card.classList.add("evento-card");
+                    card.classList.add("evento-card-ativo");
 
                     card.innerHTML = `
-                <h4>${data.nome || "Evento Sem Nome"}</h4>
-                <p><strong>Descrição:</strong> ${data.descricao || "Sem descrição"}</p>
-                <p><strong>Data:</strong> ${data.data || "Sem data"}</p>
-                <button class="terminar-btn" data-id="${id}">
-                    <i class="fa-solid fa-stop"></i> Terminar Evento
-                </button>
+                ${data.imagem ? `
+                    <div class="evento-img-ativo">
+                        <img src="${data.imagem}" alt="${data.nome}" />
+                    </div>
+                ` : ""}
+
+                <div class="evento-header-ativo">
+                    <h4>${data.nome || "Evento Sem Nome"}</h4>
+                    ${data.importante ? `<span class="badge-importante-ativo">IMPORTANTE</span>` : ""}
+                </div>
+
+                <div class="evento-body-ativo">
+                    <p><strong>Descrição:</strong> ${data.descricao || "-"}</p>
+                    <p><strong>Início:</strong> ${data.inicio || "-"}</p>
+                    <p><strong>Local:</strong> ${data.local || "-"}</p>
+                    <p><strong>Recompensa:</strong> ${data.recompensa || "-"}</p>
+                    <p><strong>Regras:</strong> ${data.regras || "-"}</p>
+                </div>
+
+                <div class="evento-footer-ativo">
+                    <button class="discord-btn" data-id="${id}">
+                        <i class="fa-solid fa-right-from-bracket"></i> Participar no Evento
+                    </button>
+                </div>
             `;
 
                     container.appendChild(card);
                 });
 
-                // Ativar botões terminar
+                // ------------------ Botão Terminar Evento ------------------
                 container.querySelectorAll(".terminar-btn").forEach(btn => {
                     btn.addEventListener("click", async e => {
                         const id = e.currentTarget.dataset.id;
+                        console.log("[DEBUG] Terminar evento clicado:", id);
 
                         const eventoDoc = doc(db, "eventosAtivos", id);
                         const eventoSnap = await getDoc(eventoDoc);
 
-                        if (eventoSnap.exists()) {
-                            const data = eventoSnap.data();
-
-                            // Move para eventosDisponiveis
-                            await setDoc(doc(db, "eventosDisponiveis", id), data);
-
-                            // Remove de ativos
-                            await deleteDoc(eventoDoc);
-
-                            carregarEventosAtivos();
+                        if (!eventoSnap.exists()) {
+                            console.warn("[DEBUG] Evento não encontrado no Firestore:", id);
+                            return;
                         }
+
+                        const eventoData = eventoSnap.data();
+
+                        // Mover para eventosDisponiveis
+                        await setDoc(doc(db, "eventosDisponiveis", id), eventoData);
+                        await deleteDoc(eventoDoc);
+
+                        console.log("[DEBUG] Evento movido para eventosDisponiveis:", id);
+
+                        carregarEventosAtivos();
                     });
                 });
 
-            } catch (error) {
-                console.error("Erro ao carregar eventos:", error);
+            } catch (err) {
+                console.error("[DEBUG] Erro ao carregar eventos:", err);
                 container.innerHTML = "<p>Erro ao carregar eventos.</p>";
             }
         }
+
+        // ------------------ Modal Participar no Evento ------------------
+        export function inicializarModalDiscord() {
+            console.log("[DEBUG] Inicializando modal Discord");
+
+            const modal = document.getElementById("participarModal");
+            const closeModal = document.getElementById("closeModal");
+            const form = document.getElementById("participarForm");
+
+            if (!modal || !closeModal || !form) {
+                console.error("[DEBUG] Modal, close ou form não encontrado!");
+                return;
+            }
+            console.log("[DEBUG] Modal, close e form encontrados");
+
+            // ------------------ Abrir modal ------------------
+            document.addEventListener("click", (e) => {
+                const btn = e.target.closest(".discord-btn");
+                if (!btn) return;
+
+                eventoSelecionadoId = btn.dataset.id;
+                console.log("[DEBUG] Botão Participar clicado - eventoSelecionadoId:", eventoSelecionadoId);
+
+                modal.style.display = "flex";
+            });
+
+            // ------------------ Fechar modal ------------------
+            closeModal.onclick = () => {
+                modal.style.display = "none";
+                console.log("[DEBUG] Modal fechado pelo X");
+            };
+
+            window.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                    console.log("[DEBUG] Modal fechado clicando fora");
+                }
+            };
+
+            // ------------------ Submeter formulário ------------------
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                console.log("[DEBUG] Form submit iniciado");
+
+                const playerId = document.getElementById("playerId").value.trim();
+                const discordId = document.getElementById("discordId").value.trim();
+                console.log(`[DEBUG] Player ID: ${playerId}, Discord ID: ${discordId}`);
+
+                if (!playerId || !discordId) {
+                    console.warn("[DEBUG] Campos vazios");
+                    alert("Preencha todos os campos!");
+                    return;
+                }
+
+                try {
+                    console.log(`[DEBUG] Buscando evento no Firestore: ${eventoSelecionadoId}`);
+                    const eventoRef = doc(db, "eventosAtivos", eventoSelecionadoId);
+                    const eventoSnap = await getDoc(eventoRef);
+
+                    if (!eventoSnap.exists()) {
+                        console.warn("[DEBUG] Evento não encontrado!");
+                        alert("Evento não encontrado!");
+                        return;
+                    }
+
+                    const eventoData = eventoSnap.data();
+                    console.log("[DEBUG] Evento encontrado:", eventoData);
+
+                    const dadosParaDiscord = {
+                        ...eventoData,
+                        playerId,
+                        discordId
+                    };
+                    console.log("[DEBUG] Dados preparados para Discord:", dadosParaDiscord);
+
+                    // Trigger: envia para Discord
+                    const resultado = await enviarEventoDiscord(dadosParaDiscord);
+                    console.log("[DEBUG] enviarEventoDiscord retornou:", resultado);
+
+                    alert("Participação enviada com sucesso para o Discord! 🚀");
+
+                    form.reset();
+                    modal.style.display = "none";
+                    console.log("[DEBUG] Form resetado e modal fechado");
+
+                } catch (err) {
+                    console.error("[DEBUG] Erro ao enviar para Discord:", err);
+                    alert("Falha ao enviar participação. Veja o console.");
+                }
+            });
+        }
+
+        // ------------------ Inicializar ------------------
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("[DEBUG] DOM carregado");
+            carregarEventosAtivos();
+            inicializarModalDiscord();
+        });
 
         // ------------------
         // Carregar Chaves
@@ -2850,8 +3054,6 @@
         // ---------------- SIDEBAR ----------------
         document.getElementById("btnDashboard").onclick = () => mostrarSecao("Dashboard");
         document.getElementById("btnEventos").onclick = () => mostrarSecao("Eventos");
-        document.getElementById("btnVer").onclick = () => mostrarSecao("Ver");
-        document.getElementById("btnGerarChave").onclick = () => mostrarSecao("GerarChave");
         document.getElementById("btnAdmin").onclick = () => mostrarSecao("Admin");
     </script>
     <script>
