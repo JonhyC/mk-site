@@ -160,18 +160,17 @@
             user-select: text;
         }
 
-        /* Cargo do usuário embaixo, com estilo de badge */
+        /* Cargo do usuário embaixo - estilo simples e discreto */
         #userCargoSidebar {
-            font-size: 0.85em;
-            margin-top: 4px;
-            background-color: #2c2c2c;
-            color: #ffc107;
-            padding: 3px 10px;
-            border-radius: 14px;
+            font-size: 12px;
+            margin-top: 6px;
+            background-color: rgba(255,255,255,0.04);
+            color: #ddd;
+            padding: 4px 8px;
+            border-radius: 10px;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            display: inline-block;
+            line-height: 1;
         }
 
         /* Botões de ação do usuário (configurações e logout) */
@@ -192,8 +191,30 @@
         }
 
         .user-actions button:hover {
+            color: #fff;
+        }
+
+        /* Hover específico: logout deve ficar vermelho, settings deve ficar com tom discord */
+        .user-actions button#btnLogoutIcon:hover {
             background-color: #ff4d4d;
             color: #fff;
+        }
+
+        .user-actions button#btnSettings:hover {
+            background-color: rgba(88,101,242,0.12);
+            color: #fff;
+        }
+
+        /* Desabilitado visual para inputs do modal */
+        .settings-input:disabled,
+        .settings-select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         /* Logo no topo da sidebar */
@@ -1070,10 +1091,150 @@
             background: #4752c4;
             transform: scale(1.05);
         }
+        /* Participar modal styles */
+        #participarModal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.6);
+            z-index: 4000;
+        }
+
+        #participarModal .modal-content {
+            width: 480px;
+            max-width: calc(100% - 40px);
+            background: #0f1115;
+            padding: 18px;
+            border-radius: 10px;
+            color: #e6eef6;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+        }
+
+        #participarModal .modal-content h3 { margin-bottom: 8px; color:#ff4d4d; }
+        #participarModal .modal-row { margin:8px 0; }
+        #participarModal input, #participarModal textarea, #participarModal select {
+            width:100%; padding:8px 10px; border-radius:8px; border:none; background:#0d1114; color:#e6eef6;
+        }
+        #participarModal .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+        .login-top-btn {
+            position: fixed;
+            top: 16px;
+            right: 18px;
+            z-index: 2000;
+            background: #ff4d4d;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 77, 77, 0.25);
+        }
+
+        .login-top-btn:hover { filter: brightness(0.95); }
+        /* Settings modal (estilo Discord) */
+        .settings-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .settings-modal {
+            width: 900px;
+            max-width: calc(100% - 40px);
+            height: 560px;
+            background: linear-gradient(180deg,#0f1115,#0b0c0f);
+            border-radius: 12px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(2,6,23,0.8);
+            color: #e6eef6;
+        }
+
+        .settings-sidebar {
+            width: 220px;
+            background: linear-gradient(180deg,#0b0d11,#0a0b0d);
+            padding: 14px;
+            box-sizing: border-box;
+            border-right: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .settings-sidebar ul { list-style:none; padding:0; margin:0; }
+        .settings-sidebar li { padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:8px; color:#bcd3ee; }
+        .settings-sidebar li.active { background: rgba(255,255,255,0.03); color:#fff; }
+
+        .settings-content { flex:1; padding:20px 22px; overflow:auto; }
+        .settings-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+        .settings-title { font-size:18px; font-weight:700; color:#fff; }
+        .settings-close { background:none; border:none; color:#9fb6d9; font-size:18px; cursor:pointer; }
+
+        .settings-row { margin:12px 0; }
+        .settings-label { display:block; color:#b6cbe6; margin-bottom:8px; font-size:13px; }
+        .settings-input, .settings-select { width:100%; padding:10px 12px; border-radius:8px; border:none; background:#0d1114; color:#e6eef6; }
+
+        .settings-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+        .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#cfe3ff; padding:8px 12px; border-radius:8px; cursor:pointer; }
+        .btn-primary { background:#5865F2; color:#fff; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; }
     </style>
 </head>
 
 <body>
+    <button id="btnEntrarTop" class="login-top-btn" style="display:none">Entrar</button>
+    <!-- Settings Modal -->
+    <div id="settingsModalOverlay" class="settings-modal-overlay" aria-hidden="true">
+        <div class="settings-modal" role="dialog" aria-modal="true">
+            <div class="settings-sidebar">
+                <ul>
+                    <li data-section="profile" class="active">Perfil</li>
+                    <li data-section="appearance">Aparência</li>
+                    <li data-section="account">Conta</li>
+                </ul>
+            </div>
+            <div class="settings-content">
+                <div class="settings-header">
+                    <div class="settings-title">Configurações</div>
+                    <button id="settingsClose" class="settings-close">✕</button>
+                </div>
+
+                <div id="settingsProfile" class="settings-panel">
+                    <div class="settings-row">
+                        <label class="settings-label">Nome</label>
+                        <input id="settingsNome" class="settings-input" type="text">
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label">Foto de Perfil</label>
+                        <input id="settingsFoto" class="settings-input" type="file" accept="image/*">
+                        <div style="margin-top:8px;"><img id="settingsFotoPreview" src="" style="width:72px;height:72px;border-radius:10px;object-fit:cover;display:none;border:2px solid rgba(255,255,255,0.06);"></div>
+                    </div>
+                </div>
+
+                <div id="settingsAppearance" class="settings-panel" style="display:none;">
+                    <div class="settings-row">
+                        <label class="settings-label">Tema</label>
+                        <select id="settingsTema" class="settings-select">
+                            <option value="dark">🌙 Escuro</option>
+                            <option value="light">☀️ Claro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="settingsAccount" class="settings-panel" style="display:none;">
+                    <p style="color:#b6cbe6">Gerir conta e preferências.</p>
+                </div>
+
+                <div class="settings-actions">
+                    <button id="settingsCancel" class="btn-ghost">Cancelar</button>
+                    <button id="settingsSave" class="btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="sidebar">
         <img src="logo.webp" class="logo" alt="Logo MK">
         <button id="btnDashboard"><i class="fa-solid fa-home"></i> Dashboard</button>
@@ -1082,19 +1243,14 @@
             Administração</button>
 
         <div class="sidebar-user" id="sidebarUserBox">
-            <div class="user-info" style="display:flex; align-items:center; gap:10px;">
+            <div class="user-info" style="display:flex; align-items:center; gap:12px;">
                 <img id="userPhoto" src="https://i.imgur.com/4Z7Dz7S.png"
-                    style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                    style="width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid #ff4d4d;">
 
-                <div class="user-text" style="display:flex; flex-direction:column;">
-                    <!-- Linha do Nome + ID -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; width:180px;">
-                        <strong id="userNomeSidebar">Carregando..</strong>
-                        <span id="userIdSidebar" style="font-size:0.9em; color:#aaa;">Carregando..</span>
-                    </div>
-                    <!-- Cargo embaixo -->
-                    <span id="userCargoSidebar" class="badgeCargo badgeUser"
-                        style="font-size:0.85em; margin-top:2px;">Carregando..</span>
+                <div class="user-text" style="display:flex; flex-direction:column; min-width:0;">
+                    <strong id="userNomeSidebar" style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Carregando..</strong>
+                    <span id="userIdSidebar" style="font-size:12px; color:#aaa; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Carregando..</span>
+                    <span id="userCargoSidebar" class="badgeCargo badgeUser" style="font-size:0.75em; margin-top:6px; display:inline-block; padding:4px 8px;">Carregando..</span>
                 </div>
             </div>
 
@@ -1107,6 +1263,41 @@
 
     <div class="main" id="mainContent"></div>
     <img id="mobileUserPhoto" class="mobile-user-photo" style="display:none;">
+
+    <!-- Participar Modal -->
+    <div id="participarModal">
+        <div class="modal-content" role="dialog" aria-modal="true">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <h3>Participar no Evento</h3>
+                <button id="closeModal" style="background:none;border:none;color:#cfe3ff;font-size:18px;cursor:pointer">✕</button>
+            </div>
+            <form id="participarForm">
+                <div class="modal-row">
+                    <label class="settings-label">Id (in game):</label>
+                    <input id="playerId" placeholder="Seu Id dentro do jogo" />
+                </div>
+                <div class="modal-row">
+                    <label class="settings-label">Id (discord):</label>
+                    <input id="discordId" placeholder="Seu Id do Discord (ex: 123456789012345678)" />
+                </div>
+                <div id="teamFields" style="display:none">
+                    <div class="modal-row">
+                        <label class="settings-label">Quantidade de membros:</label>
+                        <input id="teamCount" type="number" min="1" value="1" />
+                    </div>
+                    <div class="modal-row">
+                        <label class="settings-label">Id's dos participantes (separados por vírgula):</label>
+                        <textarea id="participantsIds" rows="3" placeholder="id1,id2,id3"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="cancelParticipar" class="btn-ghost">Cancelar</button>
+                    <button type="submit" id="submitParticipar" class="btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script type="module">
         import { db, auth } from "./firebase.js";
@@ -1126,8 +1317,12 @@
         }
 
         async function logout() {
-            await signOut(auth);
-            window.location.href = "login.html";
+            try {
+                if (auth && auth.currentUser) await signOut(auth);
+            } catch (e) {
+                console.error(e);
+            }
+            window.location.href = "dashboard.html";
         }
 
         // ---------------- SEÇÕES ----------------
@@ -1148,17 +1343,8 @@
                 case "Dashboard":
                     ativarBotao("btnDashboard");
                     main.innerHTML = `
-                    <header class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center; padding:15px 0;">
-                        <div>
-                            <h2 style="margin:0; font-weight:500;">
-                                Bem-vindo, <span id="adminNome">${currentUserNome} (${currentUserId})</span>
-                            </h2>
-                        </div>
-                        <div>
-                            <span class="badgeCargo ${cargoInfo.classe}" style="font-size:16px; padding:5px 10px;">
-                                ${cargoInfo.emoji} ${currentUserRole.toUpperCase()}
-                            </span>
-                        </div>
+                    <header class="dashboard-header" style="padding:15px 0;">
+                        <h2 style="margin:0; font-weight:600;">Dashboard</h2>
                     </header>
 
                     <!-- Cards Estatísticas -->
@@ -1248,7 +1434,7 @@
                             <ul id="adminMenu">
                                 <li class="active" data-section="dashboard"><i class="fa-solid fa-home"></i> Dashboard</li>
                                 <li data-section="eventos"><i class="fa-solid fa-ticket"></i> Eventos</li>
-                                <li data-section="jogadores"><i class="fa-solid fa-user"></i> Jogadores</li>
+                                <li data-section="inscricoes"><i class="fa-solid fa-list-check"></i> Inscrições</li>
                                 <li data-section="utilizadores"><i class="fa-solid fa-user-shield"></i> Utilizadores</li>
                                 <li data-section="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</li>
                             </ul>
@@ -1450,92 +1636,149 @@
         }
 
         // ------------------ Modal Participar no Evento ------------------
+        /*
+           inicializarModalDiscord()
+           - Centraliza toda a lógica de interação com o modal de participação
+           - Abre modal quando um botão `.discord-btn` é clicado
+           - Busca dados do evento para decidir se é modo equipe
+           - Valida e envia os dados para o Discord via webhook
+        */
         export function inicializarModalDiscord() {
             console.log("[DEBUG] Inicializando modal Discord");
 
+            // Elementos do modal
             const modal = document.getElementById("participarModal");
             const closeModal = document.getElementById("closeModal");
             const form = document.getElementById("participarForm");
+            const teamFields = document.getElementById("teamFields");
+            const teamCount = document.getElementById("teamCount");
+            const participantsIds = document.getElementById("participantsIds");
+            const cancelParticipar = document.getElementById("cancelParticipar");
 
             if (!modal || !closeModal || !form) {
                 console.error("[DEBUG] Modal, close ou form não encontrado!");
                 return;
             }
-            console.log("[DEBUG] Modal, close e form encontrados");
 
-            // ------------------ Abrir modal ------------------
-            document.addEventListener("click", (e) => {
+            // ---------- Abrir modal ----------
+            // Delegation: escuta cliques no documento para qualquer botão `.discord-btn`
+            document.addEventListener("click", async (e) => {
                 const btn = e.target.closest(".discord-btn");
                 if (!btn) return;
 
                 eventoSelecionadoId = btn.dataset.id;
                 console.log("[DEBUG] Botão Participar clicado - eventoSelecionadoId:", eventoSelecionadoId);
 
-                modal.style.display = "flex";
-            });
-
-            // ------------------ Fechar modal ------------------
-            closeModal.onclick = () => {
-                modal.style.display = "none";
-                console.log("[DEBUG] Modal fechado pelo X");
-            };
-
-            window.onclick = (e) => {
-                if (e.target === modal) {
-                    modal.style.display = "none";
-                    console.log("[DEBUG] Modal fechado clicando fora");
-                }
-            };
-
-            // ------------------ Submeter formulário ------------------
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                console.log("[DEBUG] Form submit iniciado");
-
-                const playerId = document.getElementById("playerId").value.trim();
-                const discordId = document.getElementById("discordId").value.trim();
-                console.log(`[DEBUG] Player ID: ${playerId}, Discord ID: ${discordId}`);
-
-                if (!playerId || !discordId) {
-                    console.warn("[DEBUG] Campos vazios");
-                    alert("Preencha todos os campos!");
-                    return;
-                }
-
+                // Buscar dados do evento para decidir se mostramos campos de equipe
                 try {
-                    console.log(`[DEBUG] Buscando evento no Firestore: ${eventoSelecionadoId}`);
                     const eventoRef = doc(db, "eventosAtivos", eventoSelecionadoId);
                     const eventoSnap = await getDoc(eventoRef);
-
                     if (!eventoSnap.exists()) {
-                        console.warn("[DEBUG] Evento não encontrado!");
-                        alert("Evento não encontrado!");
+                        console.warn("[DEBUG] Evento não encontrado para participar:", eventoSelecionadoId);
+                        Swal.fire({ icon: 'error', title: 'Erro', text: 'Evento não encontrado.' });
                         return;
                     }
 
                     const eventoData = eventoSnap.data();
-                    console.log("[DEBUG] Evento encontrado:", eventoData);
 
-                    const dadosParaDiscord = {
-                        ...eventoData,
-                        playerId,
-                        discordId
-                    };
-                    console.log("[DEBUG] Dados preparados para Discord:", dadosParaDiscord);
+                    // Detectar se é evento em equipa: checar campos comuns
+                    const formato = eventoData.formato || eventoData.teamSize || 1;
+                    const tipo = (eventoData.tipo || "").toString().toLowerCase();
+                    const isTeam = (formato && formato > 1) || tipo.includes('team') || tipo.includes('equipe');
 
-                    // Trigger: envia para Discord
-                    const resultado = await enviarEventoDiscord(dadosParaDiscord);
-                    console.log("[DEBUG] enviarEventoDiscord retornou:", resultado);
+                    if (isTeam) {
+                        teamFields.style.display = 'block';
+                        teamCount.value = formato > 1 ? formato : 2;
+                        participantsIds.placeholder = 'id1,id2,... (além do líder)';
+                    } else {
+                        teamFields.style.display = 'none';
+                        teamCount.value = 1;
+                        participantsIds.value = '';
+                    }
 
-                    alert("Participação enviada com sucesso para o Discord! 🚀");
-
-                    form.reset();
-                    modal.style.display = "none";
-                    console.log("[DEBUG] Form resetado e modal fechado");
-
+                    // Exibir modal
+                    modal.style.display = "flex";
                 } catch (err) {
-                    console.error("[DEBUG] Erro ao enviar para Discord:", err);
-                    alert("Falha ao enviar participação. Veja o console.");
+                    console.error('[DEBUG] Erro ao buscar evento para modal:', err);
+                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível abrir o modal. Veja o console.' });
+                }
+            });
+
+            // ---------- Fechar modal ----------
+            closeModal.onclick = () => { modal.style.display = "none"; };
+            if (cancelParticipar) cancelParticipar.onclick = () => { modal.style.display = "none"; };
+            window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+            // ---------- Submeter formulário ----------
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                // Valores do formulário
+                const playerId = document.getElementById("playerId").value.trim();
+                const discordId = document.getElementById("discordId").value.trim();
+                const teamCountVal = parseInt(teamCount.value) || 1;
+                const participantsRaw = participantsIds.value.trim();
+
+                // Validações básicas
+                if (!playerId || !discordId) {
+                    Swal.fire({ icon: 'warning', title: 'Campos vazios', text: 'Preencha Id (in game) e Id (discord).' });
+                    return;
+                }
+
+                try {
+                    const eventoRef = doc(db, "eventosAtivos", eventoSelecionadoId);
+                    const eventoSnap = await getDoc(eventoRef);
+                    if (!eventoSnap.exists()) {
+                        Swal.fire({ icon: 'error', title: 'Erro', text: 'Evento não encontrado.' });
+                        return;
+                    }
+
+                    const eventoData = eventoSnap.data();
+
+                    // Construir lista de participantes (array)
+                    const participantsList = participantsRaw ? participantsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+                    // Payload padrão com metadados úteis
+                    const dadosParaDiscord = {
+                        eventId: eventoSelecionadoId,
+                        eventName: eventoData.nome || '',
+                        playerId,
+                        discordId,
+                        teamCount: teamCountVal,
+                        participants: participantsList,
+                        eventoData
+                    };
+
+                    // Envia para o webhook (função abaixo)
+                    const resultado = await enviarEventoDiscord(dadosParaDiscord);
+                    if (resultado && resultado.ok) {
+                        Swal.fire({ icon: 'success', title: 'Enviado', text: 'Participação enviada com sucesso para o Discord!' });
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Erro', text: 'Falha ao enviar. Veja o console.' });
+                    }
+
+                    // Salvar inscrição no Firestore para relatório (collection: incricoes)
+                    try {
+                        await addDoc(collection(db, 'incricoes'), {
+                            eventId: eventoSelecionadoId,
+                            eventName: eventoData.nome || '',
+                            playerId,
+                            discordId,
+                            teamCount: teamCountVal,
+                            participants: participantsList,
+                            timestamp: new Date()
+                        });
+                    } catch (errSave) {
+                        console.error('Erro ao salvar inscrição no Firestore:', errSave);
+                    }
+
+                    // Reset e fechar
+                    form.reset();
+                    teamFields.style.display = 'none';
+                    modal.style.display = "none";
+                } catch (err) {
+                    console.error('[DEBUG] Erro no submit participação:', err);
+                    Swal.fire({ icon: 'error', title: 'Erro', text: 'Erro ao processar a participação.' });
                 }
             });
         }
@@ -1546,6 +1789,80 @@
             carregarEventosAtivos();
             inicializarModalDiscord();
         });
+
+
+        // ------------------ Enviar para Discord via Webhook (mensagem bonita com embed) ------------------
+        /*
+           A função monta um objeto de webhook contendo:
+             - `content`: menciona o usuário via <@id> para notificação
+             - `embeds`: informações detalhadas do evento em campos organizados
+           Observação: navegadores podem bloquear requisições diretas por CORS.
+        */
+        async function enviarEventoDiscord(payload) {
+            try {
+                const webhookUrl = "https://discord.com/api/webhooks/1473842925694750801/BPgcb4hLdBG0PD41DLa_fS6HE0BnNZvkpXWMgNhkAwC7cGpRqumeNfCvXIqbsDX31do4";
+
+                // Monta o texto de menção (para realmente notificar o usuário no Discord)
+                const mention = `<@${payload.discordId}>`;
+
+                // Preparar campos do embed
+                const fields = [];
+                fields.push({ name: 'Evento ID', value: String(payload.eventId || '—'), inline: true });
+                fields.push({ name: 'Nome do Evento', value: payload.eventName || (payload.eventoData?.nome || '—'), inline: true });
+                fields.push({ name: 'Player (in-game)', value: payload.playerId || '—', inline: true });
+                fields.push({ name: 'Discord', value: mention || '—', inline: true });
+
+                // Informações adicionais do evento
+                if (payload.eventoData) {
+                    if (payload.eventoData.inicio) fields.push({ name: 'Início', value: String(payload.eventoData.inicio), inline: true });
+                    if (payload.eventoData.local) fields.push({ name: 'Local', value: String(payload.eventoData.local), inline: true });
+                    if (payload.eventoData.recompensa) fields.push({ name: 'Recompensa', value: String(payload.eventoData.recompensa), inline: true });
+                }
+
+                // Team info
+                if (payload.teamCount && payload.teamCount > 1) {
+                    fields.push({ name: 'Tipo', value: `Equipa — ${payload.teamCount} membros`, inline: true });
+                    if (payload.participants && payload.participants.length) {
+                        // limitar tamanho do campo para evitar ultrapassar limites do embed
+                        const participantsText = payload.participants.join(', ');
+                        fields.push({ name: 'Membros', value: participantsText.substring(0, 1024) || '—', inline: false });
+                    }
+                }
+
+                // Construir embed bonito
+                const embed = {
+                    title: `Nova inscrição: ${payload.eventName || 'Evento'}`,
+                    description: `Um novo jogador inscreveu-se neste evento.`,
+                    color: 0x5865F2, // cor Discord-like
+                    fields,
+                    timestamp: new Date().toISOString(),
+                    footer: { text: 'MK - Inscrições', icon_url: '' }
+                };
+
+                const body = {
+                    // menciona o usuário para garantir notificação
+                    content: `${mention} Inscrição recebida ✅`,
+                    embeds: [embed]
+                };
+
+                // Envio via fetch
+                const res = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`Discord webhook error: ${res.status} ${text}`);
+                }
+
+                return { ok: true };
+            } catch (err) {
+                console.error('Erro ao enviar webhook:', err);
+                return { ok: false, error: err };
+            }
+        }
 
         // ------------------
         // Carregar Chaves
@@ -2029,8 +2346,8 @@
                 case "utilizadores":
                     renderUtilizadores(container);
                     break;
-                case "jogadores":
-                    renderJogadores(container);
+                case "inscricoes":
+                    renderInscricoes(container);
                     break;
                 case "configuracoes":
                     renderConfiguracoes(container);
@@ -2625,6 +2942,89 @@
             carregarJogadores();
         }
 
+        /* =====================================================
+           Inscrições (Admin)
+        ===================================================== */
+
+        function renderInscricoes(container) {
+            container.innerHTML = `
+                <div class="admin-header">
+                    <h1>Inscrições por Evento</h1>
+                </div>
+
+                <div class="admin-table-card" style="margin-top:15px;">
+                    <div id="listaInscricoes">
+                        <p style="text-align:center; color:#888; padding:20px;">Carregando inscrições...</p>
+                    </div>
+                </div>
+            `;
+
+            carregarInscricoes();
+        }
+
+        async function carregarInscricoes() {
+            const container = document.getElementById('listaInscricoes');
+            if (!container) return;
+            container.innerHTML = '';
+
+            try {
+                const eventosSnap = await getDocs(collection(db, 'eventosAtivos'));
+                if (eventosSnap.empty) {
+                    container.innerHTML = '<p style="color:#ccc; text-align:center;">Nenhum evento ativo.</p>';
+                    return;
+                }
+
+                // Construir tabela
+                let html = `<table style="width:100%; border-collapse:collapse;"><thead><tr style="text-align:left;"><th>Evento</th><th>Total Inscrições</th><th>Ações</th></tr></thead><tbody>`;
+
+                for (const docSnap of eventosSnap.docs) {
+                    const ev = { id: docSnap.id, ...docSnap.data() };
+
+                    // Contar inscrições para este evento (collection: incricoes)
+                    const q = query(collection(db, 'incricoes'), where('eventId', '==', ev.id));
+                    const inscritosSnap = await getDocs(q);
+                    const total = inscritosSnap.size;
+
+                    html += `<tr><td style="padding:10px 8px;">${ev.nome || ev.id}</td>`;
+                    html += `<td style="padding:10px 8px;">${total}</td>`;
+                    html += `<td style="padding:10px 8px;"><button class="verInscritosBtn" data-eventid="${ev.id}" style="padding:6px 10px;border-radius:6px;border:none;background:#5865F2;color:#fff;cursor:pointer">Ver inscritos</button></td></tr>`;
+                }
+
+                html += '</tbody></table>';
+                container.innerHTML = html;
+
+                // Liga botões
+                container.querySelectorAll('.verInscritosBtn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const eventId = btn.getAttribute('data-eventid');
+                        const snap = await getDocs(query(collection(db, 'incricoes'), where('eventId', '==', eventId)));
+                        if (snap.empty) {
+                            Swal.fire({ icon: 'info', title: 'Sem inscrições', text: 'Ninguém inscreveu-se neste evento ainda.' });
+                            return;
+                        }
+
+                        // Construir lista HTML
+                        let listHtml = `<div style="max-height:360px;overflow:auto;text-align:left;">`;
+                        listHtml += `<table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:6px">Discord ID</th><th style="text-align:left;padding:6px">Player ID</th><th style="text-align:left;padding:6px">Data</th></tr></thead><tbody>`;
+
+                        snap.forEach(s => {
+                            const d = s.data();
+                            const dt = d.timestamp ? new Date(d.timestamp.seconds ? d.timestamp.seconds * 1000 : d.timestamp).toLocaleString() : '';
+                            listHtml += `<tr><td style="padding:6px;border-top:1px solid #222;">${d.discordId || '—'}</td><td style="padding:6px;border-top:1px solid #222;">${d.playerId || '—'}</td><td style="padding:6px;border-top:1px solid #222;">${dt}</td></tr>`;
+                        });
+
+                        listHtml += `</tbody></table></div>`;
+
+                        Swal.fire({ title: 'Inscritos', html: listHtml, width: '720px' });
+                    });
+                });
+
+            } catch (err) {
+                console.error('Erro ao carregar inscrições:', err);
+                container.innerHTML = '<p style="color:red; text-align:center;">Erro ao carregar inscrições.</p>';
+            }
+        }
+
 
         /* =====================================================
            ⚙️ CONFIGURAÇÕES
@@ -2853,94 +3253,160 @@
         // ------------------
         // Configuração Botão
         // ------------------
-        document.getElementById("btnSettings").onclick = async () => {
+        // Open settings modal (custom Discord-like)
+        document.getElementById("btnSettings").onclick = () => {
+            const overlay = document.getElementById("settingsModalOverlay");
+            const nomeInput = document.getElementById("settingsNome");
+            const temaSelect = document.getElementById("settingsTema");
+            const fotoPreview = document.getElementById("settingsFotoPreview");
+            const fotoInput = document.getElementById("settingsFoto");
+            const saveBtn = document.getElementById("settingsSave");
+
+            const isAuthed = !!currentUser;
+
+            // Preencher valores
+            nomeInput.value = currentUserNome || "";
+            nomeInput.disabled = !isAuthed; // só editar se autenticado
+
             const temaAtual = document.body.classList.contains("light") ? "light" : "dark";
+            temaSelect.value = temaAtual;
+            temaSelect.disabled = false; // tema pode ser trocado mesmo para visitantes
 
-            const { value: formValues } = await Swal.fire({
-                title: "⚙️ Configurações",
-                html: `
-                    <label style="display:block;text-align:left;margin-bottom:5px;">Nome:</label>
-                    <input id="swalNomeUser" class="swal2-input" value="${currentUserNome}">
+            fotoInput.disabled = !isAuthed; // bloquear upload para visitantes
+            saveBtn.disabled = !isAuthed; // bloquear salvar para visitantes
 
-                    <label style="display:block;text-align:left;margin:15px 0 5px;">Tema:</label>
-                    <select id="swalTema" class="swal2-select">
-                        <option value="dark" ${temaAtual === "dark" ? "selected" : ""}>🌙 Escuro</option>
-                        <option value="light" ${temaAtual === "light" ? "selected" : ""}>☀️ Claro</option>
-                    </select>
+            fotoPreview.style.display = "none";
+            fotoPreview.src = "";
 
-                    <label style="display:block;text-align:left;margin:15px 0 5px;">Foto de Perfil:</label>
-                    <input type="file" id="swalFotoUser" class="swal2-file" accept="image/*">
-                `,
-                showCancelButton: true,
-                confirmButtonText: "Salvar Alterações",
-                preConfirm: () => ({
-                    nome: document.getElementById("swalNomeUser").value,
-                    tema: document.getElementById("swalTema").value,
-                    foto: document.getElementById("swalFotoUser").files[0]
-                })
+            // Inserir aviso para visitantes
+            const content = overlay.querySelector('.settings-content');
+            let notice = document.getElementById('settingsReadOnlyNotice');
+            if (!notice) {
+                notice = document.createElement('p');
+                notice.id = 'settingsReadOnlyNotice';
+                notice.style.margin = '8px 0 12px 0';
+                notice.style.color = '#cbd7ee';
+                notice.style.fontSize = '13px';
+                content.insertBefore(notice, content.firstChild);
+            }
+            if (!isAuthed) {
+                notice.textContent = 'Faça login para alterar nome e foto.';
+                notice.style.display = 'block';
+            } else {
+                notice.style.display = 'none';
+            }
+
+            overlay.style.display = "flex";
+            overlay.setAttribute("aria-hidden","false");
+            // Mostrar a seção ativa (ou perfil por defeito)
+            const activeLi = overlay.querySelector('.settings-sidebar ul li.active');
+            const initialSection = activeLi ? activeLi.getAttribute('data-section') : 'profile';
+            if (window.showSettingsSection) window.showSettingsSection(initialSection);
+        };
+
+        // Função para alternar seções do modal de configurações
+        function showSettingsSection(section) {
+            const sidebarItems = document.querySelectorAll('.settings-sidebar ul li');
+            sidebarItems.forEach(li => li.classList.toggle('active', li.getAttribute('data-section') === section));
+
+            const panels = {
+                profile: document.getElementById('settingsProfile'),
+                appearance: document.getElementById('settingsAppearance'),
+                account: document.getElementById('settingsAccount')
+            };
+
+            Object.keys(panels).forEach(key => {
+                if (!panels[key]) return;
+                panels[key].style.display = (key === section) ? 'block' : 'none';
+            });
+        }
+
+        // Liga clicks da sidebar às seções
+        (function initSettingsTabs() {
+            const sidebar = document.querySelector('.settings-sidebar ul');
+            if (!sidebar) return;
+            sidebar.querySelectorAll('li').forEach(li => {
+                li.addEventListener('click', () => {
+                    const s = li.getAttribute('data-section');
+                    showSettingsSection(s);
+                });
             });
 
-            if (!formValues) return;
+            // Aplicar tema imediatamente quando alterado
+            const temaSelect = document.getElementById('settingsTema');
+            if (temaSelect) {
+                temaSelect.addEventListener('change', (e) => {
+                    const v = e.target.value;
+                    if (v === 'light') document.body.classList.add('light');
+                    else document.body.classList.remove('light');
+                });
+            }
+        })();
+
+        // Modal controls
+        document.getElementById("settingsClose").onclick = hideSettingsModal;
+        document.getElementById("settingsCancel").onclick = hideSettingsModal;
+        document.getElementById("settingsFoto").addEventListener("change", (e) => {
+            if (e.target.disabled) return; // proteger upload quando desabilitado
+            const f = e.target.files[0];
+            const p = document.getElementById("settingsFotoPreview");
+            if (!f) { p.style.display = "none"; p.src = ""; return; }
+            const r = new FileReader(); r.onload = (ev) => { p.src = ev.target.result; p.style.display = "block"; }; r.readAsDataURL(f);
+        });
+
+        async function hideSettingsModal() {
+            const overlay = document.getElementById("settingsModalOverlay");
+            overlay.style.display = "none";
+            overlay.setAttribute("aria-hidden","true");
+        }
+
+        document.getElementById("settingsSave").onclick = async () => {
+            if (!currentUser) {
+                await Swal.fire({ icon: 'info', title: 'Faça login', text: 'Faça login para alterar as configurações.' });
+                return;
+            }
+
+            const nome = document.getElementById("settingsNome").value.trim();
+            const tema = document.getElementById("settingsTema").value;
+            const fotoFile = document.getElementById("settingsFoto").files[0];
 
             try {
-                // ===== ATUALIZAR NOME =====
-                const snap = await getDocs(collection(db, "admins"));
                 let docId = null;
-                snap.forEach(docSnap => {
-                    if (docSnap.data().email === currentUser.email) docId = docSnap.id;
-                });
-
-                if (docId) {
-                    await updateDoc(doc(db, "admins", docId), { nome: formValues.nome });
-                    currentUserNome = formValues.nome;
-                    document.getElementById("userNomeSidebar").innerText = formValues.nome;
+                if (currentUser && currentUser.email) {
+                    const snap = await getDocs(collection(db, "admins"));
+                    snap.forEach(docSnap => { if (docSnap.data().email === currentUser.email) docId = docSnap.id; });
                 }
 
-                // ===== ATUALIZAR TEMA =====
-                if (formValues.tema === "light") {
-                    document.body.classList.add("light");
-                    localStorage.setItem("temaMK", "light");
-                } else {
-                    document.body.classList.remove("light");
-                    localStorage.setItem("temaMK", "dark");
+                if (docId && nome) {
+                    await updateDoc(doc(db, "admins", docId), { nome });
+                    currentUserNome = nome;
+                    document.getElementById("userNomeSidebar").innerText = nome;
                 }
 
-                // ===== UPLOAD FOTO =====
-                if (formValues.foto && docId) {
-                    Swal.fire({
-                        title: "Enviando foto...",
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
+                // Tema
+                if (tema === "light") { document.body.classList.add("light"); localStorage.setItem("temaMK","light"); }
+                else { document.body.classList.remove("light"); localStorage.setItem("temaMK","dark"); }
 
+                if (fotoFile && docId) {
+                    Swal.fire({ title: "Enviando foto...", allowOutsideClick:false, didOpen: () => Swal.showLoading() });
                     const reader = new FileReader();
-                    reader.onload = async function (evt) {
-                        const fotoBase64 = evt.target.result;
-
-                        // Atualiza Firestore
-                        await updateDoc(doc(db, "admins", docId), { photoBase64: fotoBase64 });
-
-                        // Atualiza interface
-                        document.getElementById("userPhoto").src = fotoBase64;
-                        document.getElementById("mobileUserPhoto").src = fotoBase64;
-
+                    reader.onload = async (ev) => {
+                        const base64 = ev.target.result;
+                        await updateDoc(doc(db, "admins", docId), { photoBase64: base64 });
+                        document.getElementById("userPhoto").src = base64;
+                        document.getElementById("mobileUserPhoto").src = base64;
                         Swal.close();
-                        Swal.fire({ icon: "success", title: "Foto atualizada!" });
+                        Swal.fire({ icon: "success", title: "Configurações guardadas" });
+                        hideSettingsModal();
                     };
-                    reader.readAsDataURL(formValues.foto);
+                    reader.readAsDataURL(fotoFile);
                 } else {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Configurações atualizadas!"
-                    });
+                    Swal.fire({ icon: "success", title: "Configurações guardadas" });
+                    hideSettingsModal();
                 }
-
-            } catch (e) {
-                console.error(e);
-                Swal.fire({
-                    icon: "error",
-                    title: "Erro ao atualizar configurações"
-                });
+            } catch (err) {
+                console.error(err);
+                Swal.fire({ icon: "error", title: "Erro ao guardar" });
             }
         };
 
@@ -3004,50 +3470,83 @@
 
         // ------------------------- AUTH ---------------------------
         onAuthStateChanged(auth, async user => {
-            if (!user) { window.location.href = "login.html"; return; }
-            currentUser = user;
+            if (user) {
+                const entrarBtn = document.getElementById("btnEntrarTop");
+                if (entrarBtn) entrarBtn.style.display = "none";
+                currentUser = user;
 
-            try {
-                // Buscar o admin correspondente ao usuário logado
-                const snap = await getDocs(collection(db, "admins"));
-                let userData = null;
-                snap.forEach(docSnap => {
-                    if (docSnap.data().email === user.email) {
-                        userData = docSnap.data();
-                        userData.docId = docSnap.id;
+                try {
+                    // Buscar o admin correspondente ao usuário logado
+                    const snap = await getDocs(collection(db, "admins"));
+                    let userData = null;
+                    snap.forEach(docSnap => {
+                        if (docSnap.data().email === user.email) {
+                            userData = docSnap.data();
+                            userData.docId = docSnap.id;
+                        }
+                    });
+
+                    if (!userData) {
+                        Swal.fire({ icon: "error", title: "Sem permissão", text: "Seu usuário não é admin", timer: 2500, showConfirmButton: false });
+                        document.getElementById("mainContent").innerHTML = "<p>Você não tem permissão para acessar este dashboard.</p>";
+                        return;
                     }
-                });
 
-                if (!userData) {
-                    Swal.fire({ icon: "error", title: "Sem permissão", text: "Seu usuário não é admin", timer: 2500, showConfirmButton: false });
-                    document.getElementById("mainContent").innerHTML = "<p>Você não tem permissão para acessar este dashboard.</p>";
-                    return;
+                    // Cargo do usuário logado
+                    const userCargo = (userData.cargo || "user").toLowerCase();
+                    currentUserNome = userData.nome;
+                    currentUserId = userData.id
+                    currentUserRole = userData.cargo;
+
+                    // Mostrar botão Admin só se CEO
+                    if (userCargo === "ceo") {
+                        document.getElementById("btnAdmin").style.display = "flex";
+                    }
+
+                    // Atualiza sidebar e tema...
+                    await atualizarSidebar(userData);
+                    // mostrar elementos da sidebar quando autenticado
+                    const sidId = document.getElementById("userIdSidebar");
+                    const sidCargo = document.getElementById("userCargoSidebar");
+                    const btnSettingsEl = document.getElementById("btnSettings");
+                    const btnLogoutEl = document.getElementById("btnLogoutIcon");
+                    if (sidId) sidId.style.display = "block";
+                    if (sidCargo) sidCargo.style.display = "inline-block";
+                    if (btnSettingsEl) btnSettingsEl.style.display = "inline-flex";
+                    if (btnLogoutEl) btnLogoutEl.style.display = "inline-flex";
+                    const temaSalvo = localStorage.getItem("temaMK");
+                    if (temaSalvo === "light") document.body.classList.add("light");
+
+                    // Carrega a seção eventos passando o cargo
+                    // depois de definir currentUserRole
+                    carregarSecao("eventos", currentUserRole);
+                    mostrarSecao("Dashboard");
+
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível carregar os dados", timer: 2500, showConfirmButton: false });
                 }
-
-                // Cargo do usuário logado
-                const userCargo = (userData.cargo || "user").toLowerCase();
-                currentUserNome = userData.nome;
-                currentUserId = userData.id
-                currentUserRole = userData.cargo;
-
-                // Mostrar botão Admin só se CEO
-                if (userCargo === "ceo") {
-                    document.getElementById("btnAdmin").style.display = "flex";
-                }
-
-                // Atualiza sidebar e tema...
-                await atualizarSidebar(userData);
+            } else {
+                const entrarBtn = document.getElementById("btnEntrarTop");
+                if (entrarBtn) entrarBtn.style.display = "block";
+                currentUser = null;
+                currentUserNome = "Jogador";
+                currentUserId = "Usuário";
+                currentUserRole = "user";
+                await atualizarSidebar({ nome: currentUserNome, id: currentUserId, cargo: currentUserRole });
+                // esconder detalhes para visitante, manter apenas configurações visível
+                const sidIdG = document.getElementById("userIdSidebar");
+                const sidCargoG = document.getElementById("userCargoSidebar");
+                const btnSettingsG = document.getElementById("btnSettings");
+                const btnLogoutG = document.getElementById("btnLogoutIcon");
+                if (sidIdG) sidIdG.style.display = "none";
+                if (sidCargoG) sidCargoG.style.display = "none";
+                if (btnSettingsG) btnSettingsG.style.display = "inline-flex";
+                if (btnLogoutG) btnLogoutG.style.display = "none";
                 const temaSalvo = localStorage.getItem("temaMK");
                 if (temaSalvo === "light") document.body.classList.add("light");
-
-                // Carrega a seção eventos passando o cargo
-                // depois de definir currentUserRole
                 carregarSecao("eventos", currentUserRole);
                 mostrarSecao("Dashboard");
-
-            } catch (e) {
-                console.error(e);
-                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível carregar os dados", timer: 2500, showConfirmButton: false });
             }
         });
 
@@ -3055,6 +3554,8 @@
         document.getElementById("btnDashboard").onclick = () => mostrarSecao("Dashboard");
         document.getElementById("btnEventos").onclick = () => mostrarSecao("Eventos");
         document.getElementById("btnAdmin").onclick = () => mostrarSecao("Admin");
+        const entrarTop = document.getElementById("btnEntrarTop");
+        if (entrarTop) entrarTop.onclick = () => { window.location.href = "login.html"; };
     </script>
     <script>
         function handleMobileUserPhoto() {
